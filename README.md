@@ -21,6 +21,7 @@ The modes are organized into categories based on their primary function in the d
 
 ### Coordination
 - **Maestro**: Central coordinator that delegates tasks to specialized modes and manages the workflow
+- **ModeBuilder**: Expert guide for creating and enhancing specialized modes with proper integration
 
 ### Research
 - **Researcher**: Up-to-date information gatherer using web search and research capabilities
@@ -156,13 +157,18 @@ Each mode has detailed instructions in its respective markdown file. Review thes
 
 ## Extending the System
 
-The specialized mode system is designed to be extensible. New modes can be added to address specific domains or technologies as needed. When creating new modes:
+The specialized mode system is designed to be extensible. New modes can be added to address specific domains or technologies as needed. The recommended way to create new modes is to use the **ModeBuilder** mode, which guides you through the entire process.
 
-1. Follow the established format and structure
-2. Define clear responsibilities and boundaries
-3. Specify collaboration protocols with existing modes
-4. Document the mode thoroughly
-5. Update this README to include the new mode
+When creating new modes:
+
+1. Use ModeBuilder to guide the creation process
+2. Follow the established format and structure
+3. Define clear responsibilities and boundaries
+4. Specify collaboration protocols with existing modes
+5. Document the mode thoroughly
+6. Update this README to include the new mode
+
+For detailed guidance on using ModeBuilder, see `/docs/guides/using-mode-builder.md`.
 
 ## Implementation
 

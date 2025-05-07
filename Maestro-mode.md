@@ -170,6 +170,7 @@ graph TD
   - **Domain Context Files**: For large/complex projects, create and maintain granular context files.
   - **`/docs/project-management/task-context-{taskId}.md`**: Volatile, task-specific details.
   - **`/docs/standards/code-standards.md`**: Project-wide coding standards. (Assuming a /docs/standards/ dir)
+  - **`/docs/standards/jira-workflow.md`**: Project-wide Jira workflow standards. (Assuming a /docs/standards/ dir)
   - **`/docs/design/design-system.md`**: Project-wide design standards and components. (Assuming a /docs/design/ dir)
   - **`/docs/research/research-findings.md`**: Up-to-date information on technologies from Researcher mode.
   - **`/docs/project-management/workflow-state.md`**: Dynamic state of the current user request. **(Primary tracking file)**

@@ -173,3 +173,43 @@ For detailed guidance on using ModeBuilder, see `/docs/guides/using-mode-builder
 ## Implementation
 
 To implement these specialized modes, use the `generate-modes.js` script which will convert the markdown files into the appropriate `.roomodes` configuration format.
+
+## Copy Maestro Mechanism
+
+The copy-maestro mechanism allows you to copy Maestro project files to a target directory. This is useful for setting up new projects with the Maestro mode system.
+
+### Using .copyignore
+
+The `.copyignore` file allows you to exclude specific files and directories from being copied to the target directory, similar to how `.gitignore` works:
+
+1. **Create a .copyignore file**: Add patterns of files or directories you want to exclude
+2. **Pattern format**: Each line in the file represents a pattern to ignore
+3. **Comments**: Lines starting with `#` are treated as comments
+
+Example `.copyignore` file:
+```
+# Exclude project management files
+docs/project-management
+
+# Exclude other directories if needed
+# some/other/directory
+```
+
+### Running Copy Maestro
+
+Use the following commands to copy Maestro files to a target directory:
+
+```bash
+# Copy all modes
+npm run copy-maestro ../target-project
+
+# Copy specific mode sets
+npm run copy-maestro:frontend ../target-project
+npm run copy-maestro:backend ../target-project
+npm run copy-maestro:planning ../target-project
+
+# Dry run (show what would be copied without making changes)
+npm run copy-maestro:dry-run ../target-project
+```
+
+The copy operation will respect the patterns in your `.copyignore` file and exclude those paths from being copied to the target directory.

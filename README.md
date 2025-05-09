@@ -21,6 +21,7 @@ The modes are organized into categories based on their primary function in the d
 
 ### Coordination
 - **Maestro**: Central coordinator that delegates tasks to specialized modes and manages the workflow
+- **ModeBuilder**: Expert guide for creating and enhancing specialized modes with proper integration
 
 ### Research
 - **Researcher**: Up-to-date information gatherer using web search and research capabilities
@@ -156,13 +157,18 @@ Each mode has detailed instructions in its respective markdown file. Review thes
 
 ## Extending the System
 
-The specialized mode system is designed to be extensible. New modes can be added to address specific domains or technologies as needed. When creating new modes:
+The specialized mode system is designed to be extensible. New modes can be added to address specific domains or technologies as needed. The recommended way to create new modes is to use the **ModeBuilder** mode, which guides you through the entire process.
 
-1. Follow the established format and structure
-2. Define clear responsibilities and boundaries
-3. Specify collaboration protocols with existing modes
-4. Document the mode thoroughly
-5. Update this README to include the new mode
+When creating new modes:
+
+1. Use ModeBuilder to guide the creation process
+2. Follow the established format and structure
+3. Define clear responsibilities and boundaries
+4. Specify collaboration protocols with existing modes
+5. Document the mode thoroughly
+6. Update this README to include the new mode
+
+For detailed guidance on using ModeBuilder, see `/docs/guides/using-mode-builder.md`.
 
 ## Implementation
 
@@ -173,3 +179,43 @@ To implement these specialized modes, use the `generate-modes.js` script which w
 A GitHub Action is configured to automatically run the `generate-modes.js` script whenever changes are pushed to the `master` or `main` branch. This ensures that the `.roomodes` configuration file is always up-to-date with the latest mode definitions.
 
 For more details about the GitHub Actions workflow, see the [GitHub Actions documentation](docs/devops/github-actions.md).
+
+## Copy Maestro Mechanism
+
+The copy-maestro mechanism allows you to copy Maestro project files to a target directory. This is useful for setting up new projects with the Maestro mode system.
+
+### Using .copyignore
+
+The `.copyignore` file allows you to exclude specific files and directories from being copied to the target directory, similar to how `.gitignore` works:
+
+1. **Create a .copyignore file**: Add patterns of files or directories you want to exclude
+2. **Pattern format**: Each line in the file represents a pattern to ignore
+3. **Comments**: Lines starting with `#` are treated as comments
+
+Example `.copyignore` file:
+```
+# Exclude project management files
+docs/project-management
+
+# Exclude other directories if needed
+# some/other/directory
+```
+
+### Running Copy Maestro
+
+Use the following commands to copy Maestro files to a target directory:
+
+```bash
+# Copy all modes
+npm run copy-maestro ../target-project
+
+# Copy specific mode sets
+npm run copy-maestro:frontend ../target-project
+npm run copy-maestro:backend ../target-project
+npm run copy-maestro:planning ../target-project
+
+# Dry run (show what would be copied without making changes)
+npm run copy-maestro:dry-run ../target-project
+```
+
+The copy operation will respect the patterns in your `.copyignore` file and exclude those paths from being copied to the target directory.

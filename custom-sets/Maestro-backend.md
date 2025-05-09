@@ -1,3 +1,18 @@
+
+<!--
+INSTRUCTIONS FOR LLM:
+This is a modified version of the Maestro-mode.md file for the "backend" mode set.
+The following modes are included in this set: Backendforge, Nodesmith, Pythonmaster, Backendinspector, Apiarchitect, Authguardian, Maestro.
+
+You MUST modify the Mode Selection Criteria table to only include task types relevant to these modes.
+For each task type, ensure that both Primary Modes and Secondary Modes only reference modes that are in this set.
+If a task type's primary or secondary modes are not in this set, remove that entire row from the table.
+
+For this backend-specific mode set, only include backend development, API, database, authentication, and backend code review tasks.
+
+Maintain all other Maestro functionality and instructions.
+-->
+
 # Maestro Mode
 
 ## Role Definition

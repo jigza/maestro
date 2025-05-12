@@ -171,6 +171,8 @@ Options:
   --help, -h          Show this help message
   --playback, -p      Enable playback mode, optionally with a playback file
   --mode-set, -m      Specify a mode set to copy (e.g., "core", "frontend", "backend")
+                      Note: Mode sets are automatically regenerated if any mode Markdown files
+                      are newer than the .roomodes-{modeset} file
   --dry-run, -d       Show what would be copied without making changes
   --skip-existing, -s Skip existing modes instead of overwriting them (default: overwrite)
 
@@ -352,8 +354,9 @@ function copyDocsDirectory() {
 
 /**
  * Copy selective .mode definitions from .roomodes
+ * @param {boolean} regenerated - Whether mode sets were regenerated
  */
-function copyRoomodes() {
+function copyRoomodes(regenerated = false) {
   // Determine source .roomodes file path based on mode set
   let srcRoomodesPath;
   if (modeSet) {
@@ -380,8 +383,13 @@ function copyRoomodes() {
 
   console.log(`${dryRun ? '[DRY RUN] Would process' : 'Processing'} .roomodes file from ${srcRoomodesPath}`);
   
+  // If mode sets were regenerated, log that we're using the freshly generated file
+  if (regenerated && modeSet) {
+    console.log(`Using freshly regenerated .roomodes-${modeSet} file`);
+  }
+  
   try {
-    // Read source .roomodes file
+    // Read source .roomodes file (which may have been regenerated)
     const srcRoomodesContent = fs.readFileSync(srcRoomodesPath, 'utf8');
     let srcRoomodes;
     
@@ -479,7 +487,8 @@ function copyRoomodes() {
         source: srcRoomodesPath,
         destination: destRoomodesPath,
         added_modes: addedModes,
-        skip_existing: skipExisting
+        skip_existing: skipExisting,
+        regenerated: regenerated
       });
     }
     
@@ -501,10 +510,106 @@ try {
   };
 }
 
+/**
+ * Check if any mode Markdown files are newer than the .roomodes-{modeset} file
+ * and regenerate mode sets if needed
+ * @param {string} modeSetName - The name of the mode set to check
+ * @returns {boolean} True if regeneration was performed
+ */
+function checkAndRegenerateModeSets(modeSetName) {
+  if (!modeSetName) {
+    return false; // No mode set specified, nothing to regenerate
+  }
+
+  console.log(`Checking if mode set "${modeSetName}" needs regeneration...`);
+  
+  // Path to the .roomodes-{modeset} file
+  const roomodesPath = path.join(sourceDir, `.roomodes-${modeSetName}`);
+  
+  // If the .roomodes-{modeset} file doesn't exist, we need to generate it
+  if (!fs.existsSync(roomodesPath)) {
+    console.log(`Mode set file .roomodes-${modeSetName} not found, will generate it.`);
+    if (!dryRun) {
+      execSync(`node scripts/generate-mode-sets.js`, { stdio: 'inherit' });
+      console.log(`✓ Generated all mode sets`);
+      operations.actions.push({
+        type: 'generate_mode_sets',
+        reason: `Mode set file .roomodes-${modeSetName} not found`
+      });
+      return true;
+    } else {
+      console.log(`[DRY RUN] Would generate all mode sets`);
+      return false;
+    }
+  }
+  
+  // Get the last modified time of the .roomodes-{modeset} file
+  const roomodesStats = fs.statSync(roomodesPath);
+  const roomodesModifiedTime = roomodesStats.mtime;
+  
+  // Load mode sets from the configuration file to get the list of modes in the set
+  const modeSets = loadModeSets();
+  const modesInSet = modeSets[modeSetName.toLowerCase()];
+  
+  if (!modesInSet) {
+    console.error(`Error: Unknown mode set "${modeSetName}". Available sets: ${Object.keys(modeSets).join(', ')}`);
+    process.exit(1);
+  }
+  
+  // Check if any mode Markdown file is newer than the .roomodes-{modeset} file
+  let needsRegeneration = false;
+  let newerModes = [];
+  
+  for (const mode of modesInSet) {
+    // Convert mode slug to proper case for the filename (e.g., "frontcrafter" -> "Frontcrafter")
+    const modeProperCase = mode.charAt(0).toUpperCase() + mode.slice(1);
+    const modeFilePath = path.join(sourceDir, `${modeProperCase}-mode.md`);
+    
+    if (fs.existsSync(modeFilePath)) {
+      const modeStats = fs.statSync(modeFilePath);
+      const modeModifiedTime = modeStats.mtime;
+      
+      if (modeModifiedTime > roomodesModifiedTime) {
+        needsRegeneration = true;
+        newerModes.push(modeProperCase);
+      }
+    }
+  }
+  
+  if (needsRegeneration) {
+    console.log(`Found newer mode files: ${newerModes.join(', ')}`);
+    console.log(`Regenerating all mode sets...`);
+    
+    if (!dryRun) {
+      execSync(`node scripts/generate-mode-sets.js`, { stdio: 'inherit' });
+      console.log(`✓ Regenerated all mode sets`);
+      operations.actions.push({
+        type: 'generate_mode_sets',
+        reason: `Newer mode files found: ${newerModes.join(', ')}`,
+        newer_modes: newerModes
+      });
+      return true;
+    } else {
+      console.log(`[DRY RUN] Would regenerate all mode sets`);
+      return false;
+    }
+  }
+  
+  console.log(`Mode set "${modeSetName}" is up to date, no regeneration needed.`);
+  return false;
+}
+
 // Execute the copy operations
 copyRooDirectory();
 copyDocsDirectory();
-copyRoomodes();
+
+// Check if mode sets need regeneration before copying
+let regenerated = false;
+if (modeSet) {
+  regenerated = checkAndRegenerateModeSets(modeSet);
+}
+
+copyRoomodes(regenerated);
 
 // Always save operations log for playback if not in dry run mode
 if (!dryRun) {

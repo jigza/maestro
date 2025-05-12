@@ -1,14 +1,14 @@
 
 <!--
 INSTRUCTIONS FOR LLM:
-This is a modified version of the Maestro-mode.md file for the "backend" mode set.
-The following modes are included in this set: Backendforge, Nodesmith, Pythonmaster, Backendinspector, Apiarchitect, Authguardian, Maestro.
+This is a modified version of the Maestro-mode.md file for the "all" mode set.
+The following modes are included in this set: Accessibilityguardian, Apiarchitect, Artisan, Authguardian, Backendforge, Backendinspector, Blueprinter, Cloudforge, Codereviewer, Contentwriter, Dataarchitect, Deploymentmaster, Designsystemforge, Devsecops, Documentarian, Errormanager, Frontcrafter, Frontendinspector, Gitmaster, Infraplanner, Maestro, Mobiledeveloper, Motiondesigner, Nodesmith, Nosqlsmith, Pathfinder, Performanceengineer, Planreviewer, Pythonmaster, Reactmaster, Researcher, Securitystrategist, Securitytester, Sqlmaster, Strategist, Testcrafter, Visionary.
 
 You MUST modify the Mode Selection Criteria table to only include task types relevant to these modes.
 For each task type, ensure that both Primary Modes and Secondary Modes only reference modes that are in this set.
 If a task type's primary or secondary modes are not in this set, remove that entire row from the table.
 
-For this backend-specific mode set, only include backend development, API, database, authentication, and backend code review tasks.
+For this specialized mode set, include only the tasks relevant to the modes listed above.
 
 Maintain all other Maestro functionality and instructions.
 -->

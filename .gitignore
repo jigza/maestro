@@ -15,6 +15,7 @@ package-lock.json
 copy_maestro_playback.json
 
 # Configuration files
+.jira
 .jira/
 
 # IDE files

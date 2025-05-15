@@ -1,0 +1,25 @@
+# AWS Agent Mode Set
+
+This mode set includes all specialized AWS modes for comprehensive cloud development:
+
+- Maestro (aws): AWS-specific orchestration
+- AWSArchitect: Overall AWS architecture and service selection
+- BedrockForge: Amazon Bedrock and GenAI implementations
+- AWSSecurityGuard: AWS security, IAM, and compliance
+- DynamoDBExpert: DynamoDB design and optimization
+- AppSyncSpecialist: GraphQL and AppSync development
+- CognitoExpert: Authentication and user management
+- LambdaOptimizer: Lambda functions and serverless compute
+- AmplifyForge: Amplify Gen 2 development
+- CloudFormationExpert: Infrastructure as code
+- CloudForge: Cloud deployment and management
+- DataArchitect: Data modeling and architecture
+- ApiArchitect: API design and patterns
+- AuthGuardian: Authentication strategies
+- SecurityStrategist: Overall security planning
+- Researcher: Technical research and best practices
+- Documentarian: Documentation creation
+- ErrorManager: Error handling and debugging
+- GitMaster: Version control
+
+To use this mode set, run: `npm run generate-modes` and select "aws"

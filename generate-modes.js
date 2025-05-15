@@ -31,8 +31,8 @@ function parseModeMd(content) {
   }
   const role = roleMatch[1].trim();
   
-  // Extract custom instructions
-  const instructionsMatch = content.match(/## Custom Instructions\s+([\s\S]+?)(?=\n## |$)/);
+  // Extract custom instructions - capture everything after "## Custom Instructions" until the end of the file
+  const instructionsMatch = content.match(/## Custom Instructions\s+([\s\S]+)$/);
   if (!instructionsMatch) {
     throw new Error('Could not find custom instructions in markdown file');
   }

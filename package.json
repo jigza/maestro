@@ -28,7 +28,8 @@
     "generate-mode-sets:security": "node scripts/generate-mode-sets.js --mode-set security",
     "generate-mode-sets:planning": "node scripts/generate-mode-sets.js --mode-set planning",
     "generate-mode-sets:testing": "node scripts/generate-mode-sets.js --mode-set testing",
-    "generate-mode-sets:dry-run": "node scripts/generate-mode-sets.js --dry-run"
+    "generate-mode-sets:dry-run": "node scripts/generate-mode-sets.js --dry-run",
+    "doc:update": "pdoc generate-indexes -d ./docs && pdoc validate-links -d ./docs"
   },
   "license": "MIT",
   "dependencies": {

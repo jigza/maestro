@@ -23,6 +23,36 @@ The modes are organized into categories based on their primary function in the d
 - **Maestro**: Central coordinator that delegates tasks to specialized modes and manages the workflow
 - **ModeBuilder**: Expert guide for creating and enhancing specialized modes with proper integration
 
+## Mode Sets
+
+The Maestro system can operate with different configurations of modes, called "mode sets". These allow you to load only the modes relevant to your specific project or domain:
+
+### Available Mode Sets
+
+- **all**: Complete set with all available modes
+- **core**: Essential modes for basic orchestration (Maestro, Researcher, ErrorManager, ModeSetBuilder)
+- **frontend**: Frontend development modes (FrontCrafter, ReactMaster, Artisan, etc.)
+- **backend**: Backend development modes (BackendForge, NodeSmith, ApiArchitect, etc.)
+- **data**: Database and data management modes (DataArchitect, SqlMaster, NoSqlSmith)
+- **devops**: DevOps and deployment modes (CloudForge, DeploymentMaster, GitMaster, etc.)
+- **design**: Design and UX modes (Artisan, Pathfinder, MotionDesigner, etc.)
+- **security**: Security-focused modes (SecurityStrategist, SecurityTester, AuthGuardian, etc.)
+- **planning**: Planning and architecture modes (Visionary, Strategist, Blueprinter, etc.)
+- **testing**: Testing and quality assurance modes (TestCrafter, SecurityTester, PerformanceEngineer)
+- **aws**: AWS development modes (AWSArchitect, BedrockForge, DynamoDBExpert, AmplifyForge, etc.)
+
+### AWS Mode Set
+
+The AWS mode set is specifically designed for AWS cloud development and includes:
+
+- All specialized AWS service modes
+- Supporting data, API, and security modes
+- Integration with Amplify Gen 2
+- Serverless architecture expertise
+- Infrastructure as code support
+
+For detailed AWS workflows, see [aws-modeset-workflows.md](aws-modeset-workflows.md).
+
 ### Research
 - **Researcher**: Up-to-date information gatherer using web search and research capabilities
 
@@ -58,8 +88,20 @@ The modes are organized into categories based on their primary function in the d
 - **SqlMaster**: SQL database specialist implementing relational database solutions
 - **NoSqlSmith**: NoSQL database specialist implementing NoSQL database solutions
 
+### AWS Development
+- **AWSArchitect**: AWS architecture and service selection expert focusing on Well-Architected Framework
+- **BedrockForge**: Amazon Bedrock and GenAI specialist for RAG and AI/ML implementations
+- **AWSSecurityGuard**: AWS security, IAM, and compliance specialist
+- **DynamoDBExpert**: DynamoDB design and optimization specialist with single-table design expertise
+- **AppSyncSpecialist**: GraphQL and AWS AppSync developer for real-time APIs
+- **CognitoExpert**: AWS Cognito authentication and user management specialist
+- **LambdaOptimizer**: Lambda function optimization and serverless compute expert
+- **AmplifyForge**: AWS Amplify Gen 2 specialist for full-stack serverless applications
+- **CloudFormationExpert**: Infrastructure as code specialist using CloudFormation and CDK
+
 ### DevOps
 - **GitMaster**: Version control and Git workflow expert
+- **JiraManager**: Issue tracking and project management workflow specialist
 - **DeploymentMaster**: Deployment automation specialist
 - **CloudForge**: Cloud infrastructure implementation specialist
 - **DevSecOps**: Security integration in development and operations specialist
@@ -213,6 +255,7 @@ npm run copy-maestro ../target-project
 npm run copy-maestro:frontend ../target-project
 npm run copy-maestro:backend ../target-project
 npm run copy-maestro:planning ../target-project
+npm run copy-maestro:aws ../target-project
 
 # Dry run (show what would be copied without making changes)
 npm run copy-maestro:dry-run ../target-project

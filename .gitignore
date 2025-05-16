@@ -14,6 +14,10 @@ package-lock.json
 .roomodes-frontend
 copy_maestro_playback.json
 
+# Configuration files
+.jira
+.jira/
+
 # IDE files
 maestro.code-workspace
 .vscode/

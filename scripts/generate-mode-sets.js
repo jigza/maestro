@@ -4,10 +4,11 @@
  * Script to generate mode set-specific .roomodes files
  * 
  * This script:
- * 1. Creates a temporary Maestro-mode.md file for each mode set
- * 2. Modifies the temporary file to only include modes in the specific set
- * 3. Uses the temporary file to generate a mode set-specific .roomodes file
- * 4. Cleans up temporary files
+ * 1. Creates a directory under custom-sets/{modeset_name}-agent/ for each mode set
+ * 2. Creates a Maestro-mode.md file for each mode set in its directory
+ * 3. Modifies the file to only include modes in the specific set
+ * 4. Uses the modified file to generate a mode set-specific .roomodes file in the same directory
+ * 5. Cleans up temporary files
  */
 
 const fs = require('fs');
@@ -19,6 +20,7 @@ const { execSync } = require('child_process');
 const readFile = util.promisify(fs.readFile);
 const writeFile = util.promisify(fs.writeFile);
 const copyFile = util.promisify(fs.copyFile);
+const mkdir = util.promisify(fs.mkdir);
 const unlink = util.promisify(fs.unlink);
 
 // Path to the mode set configuration file
@@ -51,27 +53,31 @@ for (let i = 0; i < args.length; i++) {
     dryRun = true;
   } else if (arg === '--skip-maestro' || arg === '-s') {
     skipMaestroRecreation = true;
+  } else if (!arg.startsWith('-')) {
+    // Positional argument for mode set
+    modeSet = arg;
   }
 }
 
 // Show help if requested
 if (help) {
   console.log(`
-Usage: node generate-mode-sets.js [options]
+Usage: node generate-mode-sets.js [options] [mode-set]
 
 Options:
   --help, -h          Show this help message
   --list-sets, -l     List available mode sets
   --mode-set, -m      Specify a mode set to generate (e.g., "core", "frontend", "backend")
   --dry-run, -d       Show what would be generated without making changes
-  --skip-maestro, -s  Skip recreating the Maestro-{mode}.md file, use existing file
+  --skip-maestro, -s  Skip recreating the Maestro-mode.md file, use existing file
 
 Examples:
   node generate-mode-sets.js --list-sets
+  node generate-mode-sets.js frontend                # Same as --mode-set frontend
   node generate-mode-sets.js --mode-set frontend
   node generate-mode-sets.js --dry-run --mode-set backend
   node generate-mode-sets.js --mode-set frontend --skip-maestro
-  node generate-mode-sets.js                      # Generate all mode sets
+  node generate-mode-sets.js                         # Generate all mode sets
   `);
   process.exit(0);
 }
@@ -200,6 +206,17 @@ Maintain all other Maestro functionality and instructions.
 }
 
 /**
+ * Ensures that a directory exists, creating it if necessary
+ * @param {string} dirPath - Path to the directory
+ */
+async function ensureDirectoryExists(dirPath) {
+  if (!fs.existsSync(dirPath)) {
+    await mkdir(dirPath, { recursive: true });
+    console.log(`Created directory: ${dirPath}`);
+  }
+}
+
+/**
  * Generates a mode set-specific .roomodes file
  * @param {string} setName - The name of the mode set
  * @param {string[]} modes - Array of mode slugs in the set
@@ -210,15 +227,15 @@ async function generateModeSet(setName, modes) {
   try {
     // Create temporary directory if it doesn't exist
     const tempDir = path.join(process.cwd(), 'temp');
-    if (!fs.existsSync(tempDir)) {
-      fs.mkdirSync(tempDir);
-    }
+    await ensureDirectoryExists(tempDir);
     
     // Create custom-sets directory if it doesn't exist
     const customSetsDir = path.join(process.cwd(), 'custom-sets');
-    if (!fs.existsSync(customSetsDir)) {
-      fs.mkdirSync(customSetsDir);
-    }
+    await ensureDirectoryExists(customSetsDir);
+    
+    // Create mode set directory if it doesn't exist
+    const modeSetDir = path.join(customSetsDir, `${setName}-agent`);
+    await ensureDirectoryExists(modeSetDir);
     
     // Path to original Maestro-mode.md file
     const originalMaestroPath = path.join(process.cwd(), 'Maestro-mode.md');
@@ -226,17 +243,17 @@ async function generateModeSet(setName, modes) {
     // Path to temporary Maestro-mode.md file
     const tempMaestroPath = path.join(tempDir, 'Maestro-mode.md');
     
-    // Path to custom Maestro-mode.md file in custom-sets directory
-    const customMaestroPath = path.join(customSetsDir, `Maestro-${setName}.md`);
+    // Path to custom Maestro-mode.md file in mode set directory
+    const customMaestroPath = path.join(modeSetDir, 'Maestro-mode.md');
     
-    // Path to output .roomodes file
-    const outputRoomodesPath = path.join(process.cwd(), `.roomodes-${setName}`);
+    // Path to output .roomodes file in mode set directory
+    const outputRoomodesPath = path.join(modeSetDir, '.roomodes');
     
     let tempMaestroContent;
     
     if (skipMaestroRecreation && fs.existsSync(customMaestroPath)) {
-      // Use existing Maestro-{mode}.md file from custom-sets directory
-      console.log(`Using existing Maestro-${setName}.md file from custom-sets directory`);
+      // Use existing Maestro-mode.md file from mode set directory
+      console.log(`Using existing Maestro-mode.md file from ${modeSetDir}`);
       tempMaestroContent = await readFile(customMaestroPath, 'utf-8');
     } else {
       // Read original Maestro-mode.md content
@@ -257,7 +274,7 @@ async function generateModeSet(setName, modes) {
       await writeFile(tempMaestroPath, tempMaestroContent, 'utf-8');
       console.log(`Created temporary Maestro-mode.md file at: ${tempMaestroPath}`);
       
-      // Write content to custom-sets directory if not skipping recreation
+      // Write content to mode set directory if not skipping recreation
       if (!skipMaestroRecreation) {
         await writeFile(customMaestroPath, tempMaestroContent, 'utf-8');
         console.log(`Created custom Maestro-mode.md file at: ${customMaestroPath}`);
@@ -291,13 +308,19 @@ async function generateModeSet(setName, modes) {
       // Execute generate-modes.js in the temp directory
       execSync(`node ${tempGenerateModesPath}`, { cwd: tempDir });
       
-      // Copy the generated .roomodes file to the output path
+      // Copy the generated .roomodes file to the output path in the mode set directory
       const tempRoomodesPath = path.join(tempDir, '.roomodes');
       await copyFile(tempRoomodesPath, outputRoomodesPath);
       
       console.log(`✓ Generated .roomodes file for mode set ${setName} at: ${outputRoomodesPath}`);
       console.log(`✓ Saved Maestro mode file for mode set ${setName} at: ${customMaestroPath}`);
       
+      // For backward compatibility during transition, also copy to legacy paths
+      // This can be removed once all scripts are updated to use the new paths
+      // const legacyRoomodesPath = path.join(process.cwd(), `.roomodes-${setName}`);
+      // await copyFile(tempRoomodesPath, legacyRoomodesPath);
+      // console.log(`✓ Also copied to legacy path for backward compatibility: ${legacyRoomodesPath}`);
+
       // Clean up temporary files
       fs.rmSync(tempDir, { recursive: true, force: true });
       console.log(`Cleaned up temporary directory: ${tempDir}`);
@@ -343,6 +366,11 @@ async function main() {
     }
     
     console.log('\nMode set generation completed successfully!');
+    console.log('\nNOTE: The mode sets are now generated in a directory structure:');
+    console.log('custom-sets/{modeset_name}-agent/');
+    console.log('with the following files in each directory:');
+    console.log('- Maestro-mode.md');
+    console.log('- .roomodes');
   } catch (error) {
     console.error('Error generating mode sets:', error);
     process.exit(1);

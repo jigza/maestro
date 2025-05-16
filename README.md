@@ -222,6 +222,33 @@ A GitHub Action is configured to automatically run the `generate-modes.js` scrip
 
 For more details about the GitHub Actions workflow, see the [GitHub Actions documentation](docs/devops/github-actions.md).
 
+### Single Mode Updates
+
+You can update a specific mode without regenerating the entire mode set using the enhanced `generate-modes.js` script:
+
+```bash
+# Update a specific mode in all relevant mode sets
+node generate-modes.js --mode backendforge
+
+# Update a specific mode in a specific mode set
+node generate-modes.js --mode backendforge --mode-set backend
+
+# Preview updates without making changes
+node generate-modes.js --mode backendforge --dry-run
+```
+
+For convenience, npm scripts are also available:
+
+```bash
+# Update a specific mode in all relevant mode sets
+npm run update-mode backendforge
+
+# Preview updates without making changes
+npm run update-mode:dry-run backendforge
+```
+
+For detailed instructions on updating single modes, see [Updating a Single Mode](docs/guides/updating-single-mode.md).
+
 ## Copy Maestro Mechanism
 
 The copy-maestro mechanism allows you to copy Maestro project files to a target directory. This is useful for setting up new projects with the Maestro mode system.

@@ -4,6 +4,7 @@
   "description": "Maestro project",
   "scripts": {
     "copy-maestro": "node scripts/copy_maestro.js --mode-set all",
+    "copy-maestro:aws": "node scripts/copy_maestro.js --mode-set aws",
     "copy-maestro:core": "node scripts/copy_maestro.js --mode-set core",
     "copy-maestro:frontend": "node scripts/copy_maestro.js --mode-set frontend",
     "copy-maestro:backend": "node scripts/copy_maestro.js --mode-set backend",

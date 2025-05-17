@@ -1,0 +1,277 @@
+# Mode Set Configuration
+# This file defines all available mode sets for the Maestro project
+
+# Individual mode sets (each includes itself + maestro)
+individual_mode_sets:
+  accessibilityguardian:
+    - accessibilityguardian
+    - maestro
+  apiarchitect:
+    - apiarchitect
+    - maestro
+  artisan:
+    - artisan
+    - maestro
+  authguardian:
+    - authguardian
+    - maestro
+  backendforge:
+    - backendforge
+    - maestro
+  backendinspector:
+    - backendinspector
+    - maestro
+  blueprinter:
+    - blueprinter
+    - maestro
+  cloudforge:
+    - cloudforge
+    - maestro
+  codereviewer:
+    - codereviewer
+    - maestro
+  contentwriter:
+    - contentwriter
+    - maestro
+  dataarchitect:
+    - dataarchitect
+    - maestro
+  deploymentmaster:
+    - deploymentmaster
+    - maestro
+  designsystemforge:
+    - designsystemforge
+    - maestro
+  devsecops:
+    - devsecops
+    - maestro
+  documentarian:
+    - documentarian
+    - maestro
+  errormanager:
+    - errormanager
+    - maestro
+  frontcrafter:
+    - frontcrafter
+    - maestro
+  frontendinspector:
+    - frontendinspector
+    - maestro
+  gitmaster:
+    - gitmaster
+    - maestro
+  infraplanner:
+    - infraplanner
+    - maestro
+  jiramanager:
+    - jiramanager
+    - maestro
+  maestro:
+    - maestro
+  modesetbuilder:
+    - modesetbuilder
+    - maestro
+  mobiledeveloper:
+    - mobiledeveloper
+    - maestro
+  motiondesigner:
+    - motiondesigner
+    - maestro
+  nodesmith:
+    - nodesmith
+    - maestro
+  nosqlsmith:
+    - nosqlsmith
+    - maestro
+  pathfinder:
+    - pathfinder
+    - maestro
+  performanceengineer:
+    - performanceengineer
+    - maestro
+  planreviewer:
+    - planreviewer
+    - maestro
+  pythonmaster:
+    - pythonmaster
+    - maestro
+  reactmaster:
+    - reactmaster
+    - maestro
+  researcher:
+    - researcher
+    - maestro
+  securitystrategist:
+    - securitystrategist
+    - maestro
+  securitytester:
+    - securitytester
+    - maestro
+  sqlmaster:
+    - sqlmaster
+    - maestro
+  strategist:
+    - strategist
+    - maestro
+  testcrafter:
+    - testcrafter
+    - maestro
+  visionary:
+    - visionary
+    - maestro
+  awsarchitect:
+    - awsarchitect
+    - maestro
+  bedrockforge:
+    - bedrockforge
+    - maestro
+  awssecurityguard:
+    - awssecurityguard
+    - maestro
+  dynamodbexpert:
+    - dynamodbexpert
+    - maestro
+  appsyncspecialist:
+    - appsyncspecialist
+    - maestro
+  cognitoexpert:
+    - cognitoexpert
+    - maestro
+  lambdaoptimizer:
+    - lambdaoptimizer
+    - maestro
+
+# Group mode sets (all include maestro)
+group_mode_sets:
+  core:
+    - maestro
+    - researcher
+    - errormanager
+    - modesetbuilder
+    - jiramanager
+  frontend:
+    - frontcrafter
+    - reactmaster
+    - frontendinspector
+    - artisan
+    - pathfinder
+    - accessibilityguardian
+    - maestro
+    - jiramanager
+  backend:
+    - backendforge
+    - nodesmith
+    - pythonmaster
+    - backendinspector
+    - apiarchitect
+    - authguardian
+    - maestro
+    - jiramanager
+  data:
+    - dataarchitect
+    - sqlmaster
+    - nosqlsmith
+    - maestro
+    - jiramanager
+  devops:
+    - deploymentmaster
+    - cloudforge
+    - gitmaster
+    - jiramanager
+    - devsecops
+    - cloudformationexpert
+    - maestro
+  design:
+    - artisan
+    - pathfinder
+    - motiondesigner
+    - designsystemforge
+    - maestro
+    - jiramanager
+  security:
+    - securitystrategist
+    - securitytester
+    - authguardian
+    - devsecops
+    - maestro
+    - jiramanager
+  planning:
+    - visionary
+    - strategist
+    - blueprinter
+    - planreviewer
+    - maestro
+    - jiramanager
+  testing:
+    - testcrafter
+    - securitytester
+    - performanceengineer
+    - maestro
+    - jiramanager
+
+# Special mode sets
+special_mode_sets:
+  # AWS Agent mode set for comprehensive AWS development
+  aws:
+    - maestro
+    - awsarchitect
+    - bedrockforge
+    - awssecurityguard
+    - dynamodbexpert
+    - appsyncspecialist
+    - cognitoexpert
+    - lambdaoptimizer
+    - amplifyforge
+    - cloudformationexpert
+    - cloudforge
+    - dataarchitect
+    - apiarchitect
+    - authguardian
+    - securitystrategist
+    - researcher
+    - documentarian
+    - errormanager
+    - gitmaster
+    - jiramanager
+  # Default mode set includes all modes except modebuilder and modesetbuilder
+  all:
+    - accessibilityguardian
+    - amplifyforge
+    - apiarchitect
+    - artisan
+    - authguardian
+    - backendforge
+    - backendinspector
+    - blueprinter
+    - cloudforge
+    - codereviewer
+    - contentwriter
+    - dataarchitect
+    - deploymentmaster
+    - designsystemforge
+    - devsecops
+    - documentarian
+    - errormanager
+    - frontcrafter
+    - frontendinspector
+    - gitmaster
+    - infraplanner
+    - jiramanager
+    - maestro
+    - mobiledeveloper
+    - motiondesigner
+    - nodesmith
+    - nosqlsmith
+    - pathfinder
+    - performanceengineer
+    - planreviewer
+    - pythonmaster
+    - reactmaster
+    - researcher
+    - securitystrategist
+    - securitytester
+    - sqlmaster
+    - strategist
+    - testcrafter
+    - visionary
+    - cloudformationexpert

@@ -159,12 +159,12 @@ This workflow focuses on quality and performance:
 4. **Use appropriate modes**: Select the most specialized mode for each task
 5. **Document decisions**: Ensure design decisions and rationales are documented
 6. **Review transitions**: Verify handoffs between modes are complete and accurate.
-7. **Use `/docs` Directory**: All generated documentation, plans, and reports should be saved within the `/docs` directory structure.
+7. **Use `docs/` Directory**: All generated documentation, plans, and reports should be saved within the `docs/` directory structure.
 8. **Perform Quality Checks**: Implementation modes must run linters, formatters, build checks, and basic runtime checks before completing tasks. Inspector modes verify these checks.
-9. **Use Relative Paths**: Ensure all file operations within the workspace use relative paths (e.g., `./docs/file.md`, `./src/component.js`) to maintain portability. Absolute paths starting with `/` should generally be avoided for workspace files.
+9. **Use Relative Paths**: Ensure all file operations within the workspace use relative paths (e.g., `docs/file.md`, `src/component.js`) to maintain portability. Absolute paths starting with `/` should generally be avoided for workspace files.
 10. **Follow Command Rules**: Modes executing commands must use non-interactive flags and avoid long-running processes like dev servers.
 11. **Commit Milestones**: Ensure significant, reviewed milestones are committed to version control via GitMaster.
-12. **Log Reflections**: Modes should log significant issues or learnings to `./docs/reflections/ModeName-reflection.md` for later analysis by SelfReflection mode.
+12. **Log Reflections**: Modes should log significant issues or learnings to `docs/reflections/ModeName-reflection.md` for later analysis by SelfReflection mode.
 13. **Respect Interaction Mode**: Modes must strictly adhere to the selected Interaction Mode (`YOLO` vs. `Follow`). Modes operating under `Follow` will ask clarifying questions; modes under `YOLO` will proceed autonomously. Modes will refuse contradictory instructions from Maestro regarding this behavior.
 
 14. **Configure Temperatures**: Consider adjusting the temperature setting for each mode based on its function (lower for precision, higher for creativity). See "Suggested Temperature Settings" below.

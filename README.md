@@ -79,7 +79,21 @@ The modes are organized into categories based on their primary function in the d
 - **Documentarian**: Technical documentation specialist focusing on developer documentation
 - **ContentWriter**: User-facing content and documentation creator
 
+### System Improvement
+- **SelfReflection**: Meta-cognitive analyst that synthesizes reflection logs to update mode instructions for continuous improvement (Triggered by Maestro post-project).
+
 ## How to Use
+
+### Interaction Mode Selection
+
+When starting a new task, Maestro will ask you to select an **Interaction Mode**:
+
+- **`Follow MVP`**: Modes will ask clarifying questions and collaborate on decisions. Focus is on core functionality for a Minimum Viable Product.
+- **`Follow Production`**: Modes will ask clarifying questions and collaborate on decisions. Focus is on robust, scalable, production-ready features.
+- **`YOLO MVP`**: Modes will **NOT** ask clarifying questions; they will make autonomous decisions based on best practices for an MVP scope. Use this if you trust the modes to make reasonable assumptions for a basic version.
+- **`YOLO Production`**: Modes will **NOT** ask clarifying questions; they will make autonomous decisions based on best practices for a production-ready scope. Use this if you trust the modes to make robust, scalable choices autonomously.
+
+This selection influences whether planning, design, and implementation modes ask for input or proceed based on their expertise and the defined scope (MVP/Production). Review, Testing, and Documentation modes will also consider this context.
 
 ### Task Delegation
 
@@ -93,7 +107,7 @@ The modes are organized into categories based on their primary function in the d
    - Ask clarifying questions specific to their domain (especially during the initial planning phase).
    - Perform their specialized function
    - Run pre-completion quality checks (linting, formatting, build, runtime errors) if applicable.
-   - Document their work thoroughly (saving artifacts to the `/docs` directory).
+   - Document their work thoroughly (saving artifacts to the `./docs` directory using relative paths).
    - Prepare for handoff to the next mode in the workflow (including committing work via GitMaster at milestones).
 
 ### Direct Mode Access
@@ -145,10 +159,78 @@ This workflow focuses on quality and performance:
 4. **Use appropriate modes**: Select the most specialized mode for each task
 5. **Document decisions**: Ensure design decisions and rationales are documented
 6. **Review transitions**: Verify handoffs between modes are complete and accurate.
-7. **Use `/docs` Directory**: All generated documentation, plans, and reports should be saved within the `/docs` directory structure.
+7. **Use `docs/` Directory**: All generated documentation, plans, and reports should be saved within the `docs/` directory structure.
 8. **Perform Quality Checks**: Implementation modes must run linters, formatters, build checks, and basic runtime checks before completing tasks. Inspector modes verify these checks.
-9. **Follow Command Rules**: Modes executing commands must use non-interactive flags and avoid long-running processes like dev servers.
-10. **Commit Milestones**: Ensure significant, reviewed milestones are committed to version control via GitMaster.
+9. **Use Relative Paths**: Ensure all file operations within the workspace use relative paths (e.g., `docs/file.md`, `src/component.js`) to maintain portability. Absolute paths starting with `/` should generally be avoided for workspace files.
+10. **Follow Command Rules**: Modes executing commands must use non-interactive flags and avoid long-running processes like dev servers.
+11. **Commit Milestones**: Ensure significant, reviewed milestones are committed to version control via GitMaster.
+12. **Log Reflections**: Modes should log significant issues or learnings to `docs/reflections/ModeName-reflection.md` for later analysis by SelfReflection mode.
+13. **Respect Interaction Mode**: Modes must strictly adhere to the selected Interaction Mode (`YOLO` vs. `Follow`). Modes operating under `Follow` will ask clarifying questions; modes under `YOLO` will proceed autonomously. Modes will refuse contradictory instructions from Maestro regarding this behavior.
+
+14. **Configure Temperatures**: Consider adjusting the temperature setting for each mode based on its function (lower for precision, higher for creativity). See "Suggested Temperature Settings" below.
+
+## Suggested Temperature Settings
+
+Temperature influences the randomness and creativity of the model's responses. Lower values (closer to 0) lead to more deterministic, focused outputs, while higher values (closer to 1) encourage more diversity. For this system prioritizing reliability, lower temperatures are generally recommended.
+
+**Temperature: 0.1**
+*   **Rationale:** Maximum precision and safety for critical operations.
+*   **Modes:**
+    *   `AuthGuardian`
+    *   `DeploymentMaster`
+    *   `DevSecOps`
+    *   `GitMaster`
+    *   `SecurityStrategist`
+    *   `SecurityTester`
+    *   `SelfReflection`
+    *   `SqlMaster`
+    *   `NoSqlSmith`
+    *   `CloudForge`
+
+**Temperature: 0.2**
+*   **Rationale:** High predictability for structured implementation, review, and detailed planning.
+*   **Modes:**
+    *   `AccessibilityGuardian`
+    *   `BackendForge`
+    *   `BackendInspector`
+    *   `Blueprinter`
+    *   `CodeReviewer`
+    *   `DataArchitect`
+    *   `Documentarian`
+    *   `FrontCrafter`
+    *   `FrontendInspector`
+    *   `InfraPlanner`
+    *   `Maestro`
+    *   `MobileDeveloper`
+    *   `NodeSmith`
+    *   `PerformanceEngineer`
+    *   `PlanReviewer`
+    *   `PythonMaster`
+    *   `ReactMaster`
+    *   `TestCrafter`
+    *   `ApiArchitect`
+
+**Temperature: 0.4**
+*   **Rationale:** Slight flexibility for analysis, research, and user-facing content while maintaining accuracy.
+*   **Modes:**
+    *   `ContentWriter`
+    *   `Researcher`
+    *   `Strategist`
+    *   `Visionary`
+
+**Temperature: 0.6**
+*   **Rationale:** Moderate creativity for exploring design options within constraints (UX, Design Systems).
+*   **Modes:**
+    *   `DesignSystemForge`
+    *   `Pathfinder`
+
+**Temperature: 0.8**
+*   **Rationale:** Higher creativity for visual and motion design exploration.
+*   **Modes:**
+    *   `Artisan`
+    *   `MotionDesigner`
+
+*Note: These are starting recommendations. Fine-tune based on observed performance.*
 
 ## Mode Details
 
@@ -158,6 +240,7 @@ Each mode has detailed instructions in its respective markdown file. Review thes
 
 The specialized mode system is designed to be extensible. New modes can be added to address specific domains or technologies as needed. When creating new modes:
 
+Note: It is recommended to use a capable model like Claude 3.7 Sonnet when creating or editing modes to ensure high-quality instructions and adherence to the system's design principles.
 1. Follow the established format and structure
 2. Define clear responsibilities and boundaries
 3. Specify collaboration protocols with existing modes

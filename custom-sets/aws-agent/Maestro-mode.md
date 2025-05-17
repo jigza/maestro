@@ -181,8 +181,7 @@ graph LR
 │   ├── workflow-state.md         [Current state - PRIMARY]
 │   └── task-context-{id}.md      [Task-specific details]
 ├── standards/
-│   ├── code-standards.md         [Coding guidelines]
-│   └── jira-workflow.md          [JIRA standards]
+│   └── code-standards.md         [Coding guidelines]
 ├── design/
 │   └── design-system.md          [Design standards]
 ├── research/

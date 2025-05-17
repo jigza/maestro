@@ -1,6 +1,29 @@
 *.zip
 .DS_Store
-docs
 # Generated mode configuration files
-.roomodes
 custom_modes.json
+handoff-20250423.md.practices
+.practices
+
+# Node.js dependencies
+node_modules/
+package-lock.json
+
+# Project specific files
+.roo/
+.roomodes-all
+.roomodes-backend
+.roomodes-frontend
+copy_maestro_playback.json
+
+# Configuration files
+.jira
+.jira/
+
+# IDE files
+maestro.code-workspace
+.vscode/
+.idea/
+
+# Logs
+*.log

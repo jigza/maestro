@@ -30,6 +30,7 @@
     "generate-mode-sets:planning": "node scripts/generate-mode-sets.js --mode-set planning",
     "generate-mode-sets:testing": "node scripts/generate-mode-sets.js --mode-set testing",
     "generate-mode-sets:dry-run": "node scripts/generate-mode-sets.js --dry-run",
+    "update-modes": "node generate-modes.js",
     "update-mode": "node generate-modes.js --mode",
     "update-mode:dry-run": "node generate-modes.js --mode --dry-run",
     "doc:update": "pdoc generate-indexes -d ./docs && pdoc validate-links -d ./docs"

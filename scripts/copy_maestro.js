@@ -120,6 +120,7 @@ let modeSet = null;
 let dryRun = false;
 let help = false;
 let skipExisting = false;
+let listMode = false;
 
 // Store original command for playback
 const originalCommand = process.argv.slice(1).join(' ');
@@ -130,21 +131,12 @@ for (let i = 0; i < args.length; i++) {
   
   if (arg === '--help' || arg === '-h') {
     help = true;
+  } else if (arg === '--list') {
+    listMode = true;
   } else if (arg === '--playback' || arg === '-p') {
     playbackMode = true;
-    if (i + 1 < args.length && !args[i + 1].startsWith('-')) {
-      playbackFile = args[++i];
-      console.log(`Using playback file: ${playbackFile}`);
-      // Load operations from playback file
-      try {
-        const playbackData = JSON.parse(fs.readFileSync(playbackFile, 'utf8'));
-        // Process playback data
-        console.log(`Loaded ${Object.keys(playbackData).length} operations from playback file`);
-      } catch (err) {
-        console.error(`Error loading playback file: ${err.message}`);
-        process.exit(1);
-      }
-    }
+    // Don't consume the next argument as playbackFile
+    // The next non-flag argument will be treated as targetDir
   } else if (arg === '--mode-set' || arg === '-m') {
     if (i + 1 < args.length && !args[i + 1].startsWith('-')) {
       modeSet = args[++i];
@@ -174,55 +166,193 @@ Usage: node copy_maestro.js [options] <target_directory>
 
 Options:
   --help, -h          Show this help message
-  --playback, -p      Enable playback mode, optionally with a playback file
+  --playback, -p      Enable playback mode to execute saved commands
+                       - Without target: Executes all saved commands sequentially
+                       - With target: Executes the saved command for that target
+  --list              When used with --playback, lists all available targets
+                       Example: node copy_maestro.js --playback --list
   --mode-set, -m      Specify a mode set to copy (e.g., "core", "frontend", "backend")
-                      Note: Mode sets are automatically regenerated if needed
+                       Note: Mode sets are automatically regenerated if needed
   --dry-run, -d       Show what would be copied without making changes
   --skip-existing, -s Skip existing modes instead of overwriting them (default: overwrite)
 
 Examples:
-  node copy_maestro.js ../my-project
-  node copy_maestro.js --mode-set frontend ../my-project
-  node copy_maestro.js --dry-run ../my-project
-  node copy_maestro.js --skip-existing ../my-project
-  node copy_maestro.js --playback operations.json ../my-project
-  node copy_maestro.js                           # Run in playback mode
+  node copy_maestro.js ../my-project                # Copy to a target directory
+  node copy_maestro.js --mode-set aws ../my-project # Copy AWS mode set to target
+  node copy_maestro.js --dry-run ../my-project      # Dry run without changes
+  node copy_maestro.js --playback                   # Execute all saved commands
+  node copy_maestro.js --playback --list            # List all saved targets
+  node copy_maestro.js --playback ../my-project     # Execute saved command for target
   `);
   process.exit(0);
 }
 
 // If in playback mode without a target directory, just show playback info and exit
-if (playbackMode && !targetDir) {
+// Handle playback mode
+if (playbackMode) {
   const playbackFilePath = path.join(process.cwd(), 'copy_maestro_playback.json');
   
-  if (fs.existsSync(playbackFilePath)) {
-    try {
-      const playbackData = JSON.parse(fs.readFileSync(playbackFilePath, 'utf8'));
-      console.log('\nPlayback file information:');
-      console.log(`- Timestamp: ${playbackData.timestamp}`);
-      console.log(`- Original command: ${playbackData.command}`);
-      console.log(`- Target directory: ${playbackData.target}`);
-      console.log(`- Actions: ${playbackData.actions.length}`);
-      console.log('\nTo replay this operation, run:');
-      console.log(`node scripts/copy_maestro.js ${playbackData.target}`);
-      console.log('\nTo view detailed actions, examine the playback file:');
-      console.log(playbackFilePath);
-    } catch (err) {
-      console.error(`Error reading playback file: ${err.message}`);
-    }
-  } else {
-    console.log('No playback file found. Run a copy operation first to generate one.');
+  if (!fs.existsSync(playbackFilePath)) {
+    console.error(`Error: Playback file not found at ${playbackFilePath}`);
+    process.exit(1);
   }
   
-  process.exit(0);
+  try {
+    // Load and potentially migrate the playback data
+    const fileContent = fs.readFileSync(playbackFilePath, 'utf8');
+    let loadedPlaybackData = JSON.parse(fileContent);
+    
+    // Check if the playback file is in the old format
+    if (loadedPlaybackData.timestamp && loadedPlaybackData.command && loadedPlaybackData.target) {
+      console.log('Migrating playback file from old format to new format...');
+      
+      // Convert old format to new format
+      loadedPlaybackData = {
+        [loadedPlaybackData.target]: {
+          timestamp: loadedPlaybackData.timestamp,
+          command: loadedPlaybackData.command
+        }
+      };
+      
+      // Save the migrated format back to the file
+      fs.writeFileSync(playbackFilePath, JSON.stringify(loadedPlaybackData, null, 2), 'utf8');
+      console.log(`Migrated entry for target: ${Object.keys(loadedPlaybackData)[0]}`);
+    }
+    
+    if (!targetDir) {
+      // Check if we should list targets instead of executing
+      if (listMode) {
+        // Display playback information
+        console.log('\nPlayback file information:');
+        console.log(`- Total targets: ${Object.keys(loadedPlaybackData).length}`);
+        
+        Object.entries(loadedPlaybackData).forEach(([target, data]) => {
+          console.log(`\nTarget: ${target}`);
+          console.log(`- Last updated: ${data.timestamp}`);
+          console.log(`- Command: ${data.command}`);
+        });
+        
+        console.log('\nTo replay all operations, run:');
+        console.log(`node scripts/copy_maestro.js --playback`);
+        console.log('\nTo replay a specific target, run:');
+        console.log(`node scripts/copy_maestro.js --playback <target_directory>`);
+        
+        process.exit(0);
+      } else {
+        // Execute all playback commands by default
+        console.log('\nExecuting all playback commands:');
+        
+        // Execute each command in sequence
+        for (const [target, data] of Object.entries(loadedPlaybackData)) {
+          console.log(`\n--- Executing for target: ${target} ---`);
+          
+          const commandParts = data.command.split(' ');
+          const scriptIndex = commandParts.findIndex(part => part.includes('copy_maestro.js'));
+          
+          if (scriptIndex !== -1) {
+            // Create a new command that uses node to execute the script
+            const args = commandParts.slice(scriptIndex + 1).join(' ');
+            const execCommand = `node scripts/copy_maestro.js ${args}`;
+            console.log(`Modified command: ${execCommand}`);
+            
+            try {
+              execSync(execCommand, { stdio: 'inherit' });
+              console.log(`✓ Command executed successfully for target: ${target}`);
+            } catch (err) {
+              console.error(`✗ Error executing command for target ${target}: ${err.message}`);
+              // Continue with next command even if this one fails
+            }
+          } else {
+            console.error(`✗ Could not parse command for target ${target}`);
+          }
+        }
+        
+        console.log('\nAll playback commands executed.');
+        process.exit(0);
+      }
+    } else {
+      // Execute playback for specific target
+      if (loadedPlaybackData[targetDir]) {
+        const targetCommand = loadedPlaybackData[targetDir].command;
+        console.log(`Executing playback command for target ${targetDir}:`);
+        console.log(`> ${targetCommand}`);
+        
+        try {
+          const { execSync } = require('child_process');
+          
+          // Extract the arguments from the original command
+          const commandParts = targetCommand.split(' ');
+          const scriptIndex = commandParts.findIndex(part => part.includes('copy_maestro.js'));
+          
+          if (scriptIndex !== -1) {
+            // Create a new command that uses node to execute the script
+            const args = commandParts.slice(scriptIndex + 1).join(' ');
+            const execCommand = `node scripts/copy_maestro.js ${args}`;
+            console.log(`Modified command: ${execCommand}`);
+            
+            execSync(execCommand, { stdio: 'inherit' });
+          } else {
+            // If we can't find the script in the command, just execute it as is
+            execSync(targetCommand, { stdio: 'inherit' });
+          }
+          
+          console.log(`\nPlayback executed successfully for target: ${targetDir}`);
+        } catch (err) {
+          console.error(`Error executing playback command: ${err.message}`);
+          process.exit(1);
+        }
+      } else {
+        console.error(`Error: No playback data found for target: ${targetDir}`);
+        console.log('Available targets:');
+        Object.keys(loadedPlaybackData).forEach(target => console.log(`- ${target}`));
+        process.exit(1);
+      }
+      
+      process.exit(0);
+    }
+  } catch (err) {
+    console.error(`Error reading playback file: ${err.message}`);
+    process.exit(1);
+  }
 }
 
-// Operations log for playback
-const operations = {
+// Load existing playback data or create new structure
+let playbackData = {};
+const playbackFilePath = path.join(process.cwd(), 'copy_maestro_playback.json');
+
+// Try to load existing playback data
+if (fs.existsSync(playbackFilePath)) {
+  try {
+    const fileContent = fs.readFileSync(playbackFilePath, 'utf8');
+    const parsedData = JSON.parse(fileContent);
+    
+    // Check if the playback file is in the old format (has timestamp, command, target, actions as top-level keys)
+    if (parsedData.timestamp && parsedData.command && parsedData.target) {
+      console.log('Migrating playback file from old format to new format...');
+      
+      // Convert old format to new format
+      playbackData = {
+        [parsedData.target]: {
+          timestamp: parsedData.timestamp,
+          command: parsedData.command
+        }
+      };
+      
+      console.log(`Migrated entry for target: ${parsedData.target}`);
+    } else {
+      // Already in new format
+      playbackData = parsedData;
+    }
+  } catch (err) {
+    console.warn(`Warning: Could not parse existing playback file: ${err.message}`);
+    playbackData = {};
+  }
+}
+
+// Current operation for playback
+const currentOperation = {
   timestamp: new Date().toISOString(),
-  command: originalCommand,
-  target: targetDir,
-  actions: []
+  command: originalCommand
 };
 
 // Resolve paths
@@ -241,10 +371,7 @@ console.log(`Copying Maestro files from ${sourceDir} to ${targetPath}`);
 if (!fs.existsSync(targetPath) && !dryRun) {
   fs.mkdirSync(targetPath, { recursive: true });
   console.log(`Created target directory: ${targetPath}`);
-  operations.actions.push({
-    type: 'create_directory',
-    path: targetPath
-  });
+  // No need to track individual actions anymore
 } else if (!fs.existsSync(targetPath)) {
   console.log(`[DRY RUN] Would create target directory: ${targetPath}`);
 }
@@ -296,11 +423,7 @@ function copyDirectory(src, dest, filter = () => true) {
       // Copy file if not in dry run mode
       if (!dryRun) {
         fs.copyFileSync(srcPath, destPath);
-        operations.actions.push({
-          type: 'copy_file',
-          source: srcPath,
-          destination: destPath
-        });
+        // No need to track individual file copies
       } else {
         console.log(`[DRY RUN] Would copy file: ${srcPath} -> ${destPath}`);
       }
@@ -325,11 +448,7 @@ function copyRooDirectory() {
   
   if (!dryRun) {
     console.log('✓ .roo directory copied successfully');
-    operations.actions.push({
-      type: 'copy_directory',
-      source: srcRooDir,
-      destination: destRooDir
-    });
+    // No need to track directory copy action
   }
 }
 
@@ -360,12 +479,7 @@ function copyDocsDirectory() {
   
   if (!dryRun) {
     console.log('✓ docs directory copied successfully (excluding guides)');
-    operations.actions.push({
-      type: 'copy_directory_filtered',
-      source: srcDocsDir,
-      destination: destDocsDir,
-      excludes: ['guides']
-    });
+    // No need to track filtered directory copy action
   }
 }
 
@@ -491,14 +605,7 @@ function copyRoomodes(setName, regenerated = false) {
     if (!dryRun) {
       fs.writeFileSync(destRoomodesPath, JSON.stringify(destRoomodes, null, 2), 'utf8');
       console.log(`✓ .roomodes file processed successfully`);
-      operations.actions.push({
-        type: 'update_roomodes',
-        source: srcRoomodesPath,
-        destination: destRoomodesPath,
-        added_modes: addedModes,
-        skip_existing: skipExisting,
-        regenerated: regenerated
-      });
+      // No need to track roomodes update action
     }
     
   } catch (err) {
@@ -590,11 +697,7 @@ function checkAndRegenerateModeSets(modeSetName) {
     if (!dryRun) {
       execSync(`node scripts/generate-mode-sets.js ${modeSetName}`, { stdio: 'inherit' });
       console.log(`✓ Regenerated mode set: ${modeSetName}`);
-      operations.actions.push({
-        type: 'generate_mode_set',
-        mode_set: modeSetName,
-        reason: 'Mode set needs regeneration'
-      });
+      // No need to track mode set generation action
       return true;
     } else {
       console.log(`[DRY RUN] Would regenerate mode set: ${modeSetName}`);
@@ -619,10 +722,13 @@ if (modeSet) {
 copyRoomodes(modeSet, regenerated);
 
 // Always save operations log for playback if not in dry run mode
-if (!dryRun) {
-  const playbackFilePath = path.join(process.cwd(), 'copy_maestro_playback.json');
-  fs.writeFileSync(playbackFilePath, JSON.stringify(operations, null, 2), 'utf8');
-  console.log(`\nPlayback file saved to: ${playbackFilePath}`);
+if (!dryRun && targetDir) {
+  // Update the playback data with the current operation for this target
+  playbackData[targetDir] = currentOperation;
+  
+  // Write the updated playback data to the file
+  fs.writeFileSync(playbackFilePath, JSON.stringify(playbackData, null, 2), 'utf8');
+  console.log(`\nPlayback information saved to: ${playbackFilePath}`);
 }
 
 console.log(`\nCopy operation ${dryRun ? 'would be' : 'was'} completed successfully!`);

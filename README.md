@@ -14,8 +14,8 @@ The modes are organized into categories based on their primary function in the d
 
 ## Prerequisites
 
-- **Maestro Mode Repository:** The source code for these modes can be found at: [https://github.com/shariqriazz/maestro](https://github.com/shariqriazz/maestro)
-- **Vertex AI MCP Server:** Some modes, particularly `Researcher`, rely on capabilities provided by an external MCP server. The recommended server is: [https://github.com/shariqriazz/vertex-ai-mcp-server](https://github.com/shariqriazz/vertex-ai-mcp-server). Ensure this server is running and configured for full functionality.
+- **Maestro Mode Repository:** The source code for these modes can be found at: [https://github.com/jigza/maestro](https://github.com/jigza/maestro)
+- **Brave Search MCP Server:** Some modes, particularly `Researcher`, rely on capabilities provided by an external MCP server. The recommended server is: [https://github.com/modelcontextprotocol/servers/tree/main/src/brave-search](https://github.com/modelcontextprotocol/servers/tree/main/src/brave-search). Ensure this server is running and configured for full functionality. This should be done using Docker.
 
 ## Mode Structure
 

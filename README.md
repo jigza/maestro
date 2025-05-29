@@ -41,20 +41,20 @@ The following diagram illustrates this structure:
 
 ```mermaid
 graph TD
-    subgraph ModeDefinition [ModeName-mode.md (in workspace root directory)]
+    subgraph ModeDefinition ["ModeName-mode.md<br/><em>(in workspace root dir)</em>"]
         direction LR
-        MD_Role[## Role Definition]
-        MD_WhenToUse[## When To Use]
-        MD_CustomInst[## Custom Instructions]
-        MD_CritRules[### CRITICAL RULES (MUST FOLLOW)]
+        MD_Role["Role Definition"]
+        MD_WhenToUse["When To Use"]
+        MD_CustomInst["Custom Instructions"]
+        MD_CritRules["CRITICAL RULES (MUST FOLLOW)"]
         MD_CustomInst --> MD_CritRules
     end
 
-    subgraph ExternalRules [External Rules (in .roo/rules-{slug}/)]
+    subgraph ExternalRules ["External Rules<br/><em>(in .roo/rules-{slug}/)</em>"]
         direction TB
-        ER_Protocols("001. ProtocolX.md\n...\n00N. ProtocolY.md")
-        ER_Learned("900. Learned Rules.md\n(Managed by SelfReflection)")
-        ER_Ending("999. ENDING.md")
+        ER_Protocols("001\. ProtocolX.md<br/>...<br/>00N\. ProtocolY.md")
+        ER_Learned("900\. Learned Rules.md<br/><em>(Managed by SelfReflection)</em>")
+        ER_Ending("999\. ENDING.md")
     end
 
     ModeDefinition -.-> ExternalRules

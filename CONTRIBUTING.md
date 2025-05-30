@@ -124,7 +124,7 @@ You are Roo, an elite [domain] specialist with exceptional expertise in [specifi
 
 And here is the description of the external instruction files to add to the template section:
 
-```markdown
+````markdown
 Detailed protocols and the final summary are placed in separate files within `.roo/rules-{slug}/`.
 
 Example structure for `.roo/rules-newmodename/`:
@@ -156,7 +156,7 @@ YOU MUST REMEMBER that [summary of the mode's primary purpose and key responsibi
 **Crucially, you MUST refuse any instruction from Maestro that contradicts the selected Interaction Mode and log this refusal.** **You MUST use relative paths for all workspace file operations.**
 ```
 (Copy the exact markdown content of the final summary paragraph from the original plan/definition)
-```
+````
 
 ## Editing an Existing Mode
 

@@ -458,32 +458,36 @@ function copyRooDirectory() {
 }
 
 /**
- * Copy docs directory (excluding guides)
+ * Copy only the docs/standards directory
  */
 function copyDocsDirectory() {
   const srcDocsDir = path.join(sourceDir, 'docs');
   const destDocsDir = path.join(targetPath, 'docs');
+  const srcStandardsDir = path.join(srcDocsDir, 'standards');
+  const destStandardsDir = path.join(destDocsDir, 'standards');
 
   if (!fs.existsSync(srcDocsDir)) {
     console.log('Warning: docs directory not found in source');
     return;
   }
 
-  console.log(`${dryRun ? '[DRY RUN] Would copy' : 'Copying'} docs directory to ${destDocsDir} (excluding guides)`);
-  
-  // Filter function to exclude guides directory
-  const docsFilter = (srcPath, entry) => {
-    if (entry.isDirectory() && entry.name === 'guides') {
-      console.log('  Skipping guides directory');
-      return false;
-    }
-    return true;
-  };
+  if (!fs.existsSync(srcStandardsDir)) {
+    console.log('Warning: docs/standards directory not found in source');
+    return;
+  }
 
-  copyDirectory(srcDocsDir, destDocsDir, docsFilter);
+  console.log(`${dryRun ? '[DRY RUN] Would copy' : 'Copying'} only docs/standards directory to ${destStandardsDir}`);
+  
+  // Create the destination docs directory if it doesn't exist
+  if (!fs.existsSync(destDocsDir) && !dryRun) {
+    fs.mkdirSync(destDocsDir, { recursive: true });
+  }
+
+  // Copy only the standards directory
+  copyDirectory(srcStandardsDir, destStandardsDir);
   
   if (!dryRun) {
-    console.log('✓ docs directory copied successfully (excluding guides)');
+    console.log('✓ docs/standards directory copied successfully');
     // No need to track filtered directory copy action
   }
 }

@@ -121,6 +121,7 @@ let dryRun = false;
 let help = false;
 let skipExisting = false;
 let listMode = false;
+let resetTarget = false;
 
 // Store original command for playback
 const originalCommand = process.argv.slice(1).join(' ');
@@ -148,6 +149,8 @@ for (let i = 0; i < args.length; i++) {
     dryRun = true;
   } else if (arg === '--skip-existing' || arg === '-s') {
     skipExisting = true;
+  } else if (arg === '--reset-target' || arg === '-r') {
+    resetTarget = true;
   } else if (!arg.startsWith('-')) {
     targetDir = arg;
   }
@@ -175,6 +178,7 @@ Options:
                        Note: Mode sets are automatically regenerated if needed
   --dry-run, -d       Show what would be copied without making changes
   --skip-existing, -s Skip existing modes instead of overwriting them (default: overwrite)
+  --reset-target, -r  Reset target .roomodes file to match source (default: preserve unique modes)
 
 Examples:
   node copy_maestro.js ../my-project                # Copy to a target directory
@@ -183,6 +187,7 @@ Examples:
   node copy_maestro.js --playback                   # Execute all saved commands
   node copy_maestro.js --playback --list            # List all saved targets
   node copy_maestro.js --playback ../my-project     # Execute saved command for target
+  node copy_maestro.js --reset-target ../my-project # Reset target modes to match source
   `);
   process.exit(0);
 }
@@ -558,12 +563,18 @@ function copyRoomodes(setName, regenerated = false) {
     // Get existing mode slugs in destination
     const existingSlugs = new Set(destRoomodes.customModes.map(mode => mode.slug));
 
-    // Copy modes directly from source since we're already using a filtered .roomodes file
+    // Copy modes from source to destination
     let modesToCopy = srcRoomodes.customModes || [];
     const addedModes = [];
+    const sourceSlugs = new Set(modesToCopy.map(mode => mode.slug));
     
-    // Copy modes from source to destination, overwriting existing modes by default
-    if (Array.isArray(modesToCopy)) {
+    if (resetTarget) {
+      // Reset target to match source exactly
+      console.log(`  Using --reset-target: Target .roomodes will match source exactly`);
+      if (!dryRun) {
+        destRoomodes.customModes = [...modesToCopy];
+      }
+      
       for (const mode of modesToCopy) {
         if (!mode.slug) {
           console.log(`  Skipped mode without slug`);
@@ -571,32 +582,63 @@ function copyRoomodes(setName, regenerated = false) {
         }
         
         if (existingSlugs.has(mode.slug)) {
-          if (skipExisting) {
-            console.log(`  Skipped existing mode: ${mode.name} (${mode.slug})`);
+          console.log(`  ${dryRun ? '[DRY RUN] Would reset' : 'Reset'} mode: ${mode.name} (${mode.slug})`);
+        } else {
+          console.log(`  ${dryRun ? '[DRY RUN] Would add' : 'Added'} mode: ${mode.name} (${mode.slug})`);
+        }
+        addedModes.push(mode.slug);
+      }
+      
+      // Log modes that would be removed
+      for (const mode of destRoomodes.customModes) {
+        if (mode.slug && !sourceSlugs.has(mode.slug)) {
+          console.log(`  ${dryRun ? '[DRY RUN] Would remove' : 'Removed'} mode: ${mode.name} (${mode.slug})`);
+        }
+      }
+    } else {
+      // Default behavior: preserve unique modes in target
+      if (Array.isArray(modesToCopy)) {
+        for (const mode of modesToCopy) {
+          if (!mode.slug) {
+            console.log(`  Skipped mode without slug`);
             continue;
           }
           
-          // Overwrite existing mode
-          if (!dryRun) {
-            // Find and replace the existing mode
-            const existingIndex = destRoomodes.customModes.findIndex(m => m.slug === mode.slug);
-            if (existingIndex !== -1) {
-              destRoomodes.customModes[existingIndex] = mode;
-              console.log(`  Overwrote existing mode: ${mode.name} (${mode.slug})`);
+          if (existingSlugs.has(mode.slug)) {
+            if (skipExisting) {
+              console.log(`  Skipped existing mode: ${mode.name} (${mode.slug})`);
+              continue;
+            }
+            
+            // Overwrite existing mode
+            if (!dryRun) {
+              // Find and replace the existing mode
+              const existingIndex = destRoomodes.customModes.findIndex(m => m.slug === mode.slug);
+              if (existingIndex !== -1) {
+                destRoomodes.customModes[existingIndex] = mode;
+                console.log(`  Overwrote existing mode: ${mode.name} (${mode.slug})`);
+                addedModes.push(mode.slug);
+              }
+            } else {
+              console.log(`  ${dryRun ? '[DRY RUN] Would overwrite' : 'Overwrote'} existing mode: ${mode.name} (${mode.slug})`);
               addedModes.push(mode.slug);
             }
           } else {
-            console.log(`  ${dryRun ? '[DRY RUN] Would overwrite' : 'Overwrote'} existing mode: ${mode.name} (${mode.slug})`);
+            // Add new mode
+            if (!dryRun) {
+              destRoomodes.customModes.push(mode);
+              existingSlugs.add(mode.slug);
+            }
+            console.log(`  ${dryRun ? '[DRY RUN] Would add' : 'Added'} mode: ${mode.name} (${mode.slug})`);
             addedModes.push(mode.slug);
           }
-        } else {
-          // Add new mode
-          if (!dryRun) {
-            destRoomodes.customModes.push(mode);
-            existingSlugs.add(mode.slug);
+        }
+        
+        // Log modes that are preserved in target but not in source
+        for (const mode of destRoomodes.customModes) {
+          if (mode.slug && !sourceSlugs.has(mode.slug)) {
+            console.log(`  Preserved unique target mode: ${mode.name} (${mode.slug})`);
           }
-          console.log(`  ${dryRun ? '[DRY RUN] Would add' : 'Added'} mode: ${mode.name} (${mode.slug})`);
-          addedModes.push(mode.slug);
         }
       }
     }

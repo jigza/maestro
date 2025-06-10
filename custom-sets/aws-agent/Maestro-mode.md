@@ -34,10 +34,11 @@ AWS Security       → AWSSecurityGuard
 DynamoDB           → DynamoDBExpert
 AppSync/GraphQL    → AppSyncSpecialist
 Cognito/Auth       → CognitoExpert
-Lambda             → LambdaOptimizer
+Lambda Optimization → LambdaOptimizer
 Amplify            → AmplifyForge
-CloudFormation/CDK → CloudFormationExpert
+CloudFormation/IaC → CloudFormationExpert
 Cloud Infrastructure → CloudForge
+Cloudscape UI      → CloudscapeExpert
 Data Architecture  → DataArchitect
 API Design         → ApiArchitect
 Authentication     → AuthGuardian
@@ -141,24 +142,24 @@ graph LR
 |--------------|--------------|----------------|------------------|
 | **AWS Architecture & Planning** |
 | AWS Architecture | AWSArchitect | CloudForge | Requirements |
-| AWS Security | AWSSecurityGuard | SecurityStrategist | Requirements |
-| Data Architecture | DataArchitect | AWSArchitect | System design |
-| Security Plan | SecurityStrategist | AuthGuardian | Requirements |
 | Issue Planning | JiraManager | AWSArchitect | Requirements |
-| **AWS Services** |
-| DynamoDB | DynamoDBExpert | DataArchitect | Data requirements |
+| DB Design | DataArchitect | DynamoDBExpert | System design |
+| Security Plan | SecurityStrategist | AuthGuardian | Requirements |
+| **AWS Services & Implementation** |
+| Bedrock/GenAI | BedrockForge | Researcher | Requirements |
+| DynamoDB | DynamoDBExpert | DataArchitect | Data model |
 | AppSync/GraphQL | AppSyncSpecialist | ApiArchitect | API design |
 | Cognito/Auth | CognitoExpert | AuthGuardian | Auth requirements |
-| Lambda | LambdaOptimizer | CloudForge | Function specs |
-| Amplify | AmplifyForge | AWSArchitect | Project requirements |
-| Bedrock/GenAI | BedrockForge | AWSArchitect | AI requirements |
+| Lambda | LambdaOptimizer | CloudForge | Performance needs |
+| Amplify | AmplifyForge | Researcher | Project requirements |
+| CloudFormation | CloudFormationExpert | AWSArchitect | Infrastructure needs |
 | **Research & Documentation** |
 | Tech Research | Researcher | AWSArchitect | Tech stack |
 | API Docs | Documentarian | ApiArchitect | Implementation |
-| AWS Documentation | Documentarian | AWSArchitect | Features |
-| **Infrastructure & Deployment** |
-| CloudFormation/CDK | CloudFormationExpert | CloudForge | Architecture |
+| AWS Docs | Documentarian | AWSArchitect | Architecture |
+| **Cloud & Infrastructure** |
 | Cloud Setup | CloudForge | AWSArchitect | Architecture |
+| Cloudscape UI | CloudscapeExpert | ApiArchitect | UI requirements |
 | **Testing & Management** |
 | Amplify Testing | AmplifyBackendTester | AmplifyForge | Implementation |
 | Git Workflow | GitMaster | - | All changes |

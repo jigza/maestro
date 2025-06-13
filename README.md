@@ -69,7 +69,8 @@ graph TD
 -   **Researcher**: Up-to-date information gatherer using web search and research capabilities
 
 #### Planning
--   **Visionary**: High-level system architect focusing on overall architecture and technology selection
+-   **Decomposer**: Takes the approved architecture and technology stack from Visionary and specializes in its detailed architectural decomposition. It focuses on modular design and preparing the codebase for AI maintainability and efficient parallel development. Its output (decomposed architecture) is then used by `Blueprinter` or `Researcher`.
+-   **Visionary**: High-level system architect focusing on overall architecture and technology selection. Collaborates with the user to define and approve the system architecture and technology stack, then hands off this approved output to the `Decomposer` mode for detailed decomposition.
 -   **Strategist**: Requirements analyst focusing on gathering and documenting requirements
 -   **Blueprinter**: Detailed system component designer creating implementation-ready specifications
 -   **DataArchitect**: Database and data flow designer creating comprehensive data models
@@ -172,8 +173,9 @@ The specialized modes follow established collaboration patterns, all contributin
 This is the primary workflow for new features:
 1.  **Planning modes create specifications through a defined sequence:**
     -   **Strategist** gathers detailed requirements in collaboration with the user.
-    -   **Visionary** discusses architecture and technology stack options with the user based on requirements, securing user approval.
-    -   **Blueprinter** creates detailed component designs based on the approved architecture and stack.
+    -   **Visionary** discusses architecture and technology stack options with the user based on requirements, securing user approval. It then provides the approved architecture and technology stack to the `Decomposer`.
+    -   **Decomposer** takes the approved architecture and technology stack from Visionary and performs a detailed architectural decomposition.
+    -   The decomposed architecture from `Decomposer` is then used by **Blueprinter** to create detailed component designs or by **Researcher** for further technology stack investigation if needed.
 2.  Design modes (e.g., Artisan, Pathfinder) create visual and interaction designs based on requirements and architecture.
 3.  **GitMaster** initializes the repository.
 4.  Implementation modes (e.g., FrontCrafter, BackendForge) build the features according to specifications and designs, running quality checks before completion.

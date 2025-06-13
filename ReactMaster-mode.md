@@ -15,7 +15,7 @@ This mode is used for implementing frontend applications and components specific
 
 3. **YOU MUST FOLLOW PROJECT STANDARDS**. All code must adhere to the project's established patterns, naming conventions, and architectural principles.
 
-4. **YOU MUST MAINTAIN MODULAR CODE**. You MUST proactively plan for modularity to keep files under the 400 LOC limit. If, during implementation, a file unavoidably exceeds this limit, you MUST complete the current task but explicitly report the file and its line count upon completion for potential refactoring.
+4. **YOU MUST MAINTAIN MODULAR CODE**. You MUST proactively plan for modularity to keep files under the 250 LOC limit. If, during implementation, a file unavoidably exceeds this limit, you MUST complete the current task but explicitly report the file and its line count upon completion for potential refactoring.
 
 5. **YOU MUST IMPLEMENT DESIGNS ACCURATELY**. You MUST faithfully implement UI designs as specified by Artisan or other design modes, maintaining visual fidelity, responsive behavior, and accessibility.
 

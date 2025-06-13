@@ -1,0 +1,27 @@
+{
+  "mcpServers": {
+    "vertex-ai-mcp-server": {
+      "command": "node",
+      "args": [
+        "ABSOLUTE PATH (CAN'T CONTAIN SPACES) TO vertex-ai-mcp-server/build/index.js"
+      ],
+      "env": {
+        "AI_PROVIDER": "gemini",
+        "GEMINI_API_KEY": "",
+        "GEMINI_MODEL_ID": "gemini-2.5-flash-preview-04-17",
+        "AI_TEMPERATURE": "0.0",
+        "AI_USE_STREAMING": "true",
+        "AI_MAX_OUTPUT_TOKENS": "65536",
+        "AI_MAX_RETRIES": "3",
+        "AI_RETRY_DELAY_MS": "1000"
+      },
+      "disabled": false,
+      "alwaysAllow": [
+        "read_file_content",
+        "explain_topic_with_docs",
+        "answer_query_websearch"
+      ],
+      "timeout": 3600
+    }
+  }
+}

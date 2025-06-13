@@ -5,3 +5,5 @@ docs
 # Generated mode configuration files
 .roomodes
 custom_modes.json
+# MCP project configurations
+.roo/mcp.json

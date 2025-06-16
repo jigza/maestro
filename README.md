@@ -79,17 +79,6 @@ graph TD
 -   **InfraPlanner**: Infrastructure and deployment architecture designer
 -   **PlanReviewer**: Architecture and design plan reviewer for quality assurance
 
-#### Designing
-
-
-
-#### Frontend Development
-
-#### Backend Development
-
-#### Database
-
-
 #### DevOps
 -   **GitMaster**: Version control and Git workflow expert
 -   **DeploymentMaster**: Deployment automation specialist
@@ -99,9 +88,6 @@ graph TD
 #### Testing
 -   **TestCrafter**: General testing specialist creating comprehensive test suites
 -   **SecurityTester**: Security testing and penetration testing specialist
-
-#### Reviewing
-
 
 #### Performance
 -   **PerformanceEngineer**: Performance optimization and efficiency improvement specialist
@@ -147,7 +133,7 @@ This selection influences whether planning, design, and implementation modes ask
 You can also access specialized modes directly for focused tasks:
 
 1.  **Planning tasks**: Use Visionary for high-level architecture, Strategist for requirements, or other planning modes
-2.  **Design tasks**: Use Artisan for UI/UX design, or other design modes
+
 3.  **Development tasks**: Use other development modes based on your needs
 4.  **Review tasks**: Use , or other review modes to evaluate existing code
 
@@ -163,9 +149,9 @@ This is the primary workflow for new features:
     -   **Visionary** discusses architecture and technology stack options with the user based on requirements, securing user approval. It then provides the approved architecture and technology stack to the `Decomposer`.
     -   **Decomposer** takes the approved architecture and technology stack from Visionary and performs a detailed architectural decomposition.
     -   The decomposed architecture from `Decomposer` is then used by **Blueprinter** to create detailed component designs or by **Researcher** for further technology stack investigation if needed.
-2.  Design modes (e.g., Artisan) create visual and interaction designs based on requirements and architecture.
+
 3.  **GitMaster** initializes the repository.
-4.  Implementation modes (e.g., PythonMaster) build the features according to specifications and designs, running quality checks before completion.
+4.  Implementation modes build the features according to specifications and designs, running quality checks before completion.
 5.  Review modes evaluate the implementation at planned milestones.
 6.  **GitMaster** commits successfully reviewed and tested code at milestones.
 
@@ -239,18 +225,6 @@ Temperature influences the randomness and creativity of the model's responses. L
     *   `Researcher`
     *   `Strategist`
     *   `Visionary`
-
-**Temperature: 0.6**
-*   **Rationale:** Moderate creativity for exploring design options within constraints (UX, Design Systems).
-*   **Modes:**
-    *   `DesignSystemForge`
-
-
-**Temperature: 0.8**
-*   **Rationale:** Higher creativity for visual and motion design exploration.
-*   **Modes:**
-    *   `Artisan`
-
 
 *Note: These are starting recommendations. Fine-tune based on observed performance.*
 

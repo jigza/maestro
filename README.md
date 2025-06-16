@@ -80,26 +80,15 @@ graph TD
 -   **PlanReviewer**: Architecture and design plan reviewer for quality assurance
 
 #### Designing
--   **Artisan**: UI designer focusing on visual design and aesthetics
--   **Pathfinder**: UX designer focusing on user flows and interaction design
--   **MotionDesigner**: Animation and motion design specialist
--   **DesignSystemForge**: Design system creator and maintainer
+
+
 
 #### Frontend Development
--   **FrontCrafter**: General frontend developer implementing UI components
--   **ReactMaster**: React specialist implementing React components and applications
--   **MobileDeveloper**: Mobile application developer for iOS and Android
--   **AccessibilityGuardian**: Accessibility implementation and compliance specialist
 
 #### Backend Development
--   **BackendForge**: General backend developer implementing server-side systems
--   **NodeSmith**: Node.js specialist implementing Node.js applications
--   **PythonMaster**: Python specialist implementing Python applications
--   **AuthGuardian**: Authentication and authorization implementation specialist
 
 #### Database
--   **SqlMaster**: SQL database specialist implementing relational database solutions
--   **NoSqlSmith**: NoSQL database specialist implementing NoSQL database solutions
+
 
 #### DevOps
 -   **GitMaster**: Version control and Git workflow expert
@@ -112,9 +101,7 @@ graph TD
 -   **SecurityTester**: Security testing and penetration testing specialist
 
 #### Reviewing
--   **CodeReviewer**: General code reviewer focusing on code quality and best practices
--   **FrontendInspector**: Frontend code and UI implementation reviewer
--   **BackendInspector**: Backend code and architecture reviewer
+
 
 #### Performance
 -   **PerformanceEngineer**: Performance optimization and efficiency improvement specialist
@@ -160,9 +147,9 @@ This selection influences whether planning, design, and implementation modes ask
 You can also access specialized modes directly for focused tasks:
 
 1.  **Planning tasks**: Use Visionary for high-level architecture, Strategist for requirements, or other planning modes
-2.  **Design tasks**: Use Artisan for UI design, Pathfinder for UX design, or other design modes
-3.  **Development tasks**: Use FrontCrafter, BackendForge, or other development modes based on your needs
-4.  **Review tasks**: Use CodeReviewer, FrontendInspector, or other review modes to evaluate existing code
+2.  **Design tasks**: Use Artisan for UI/UX design, or other design modes
+3.  **Development tasks**: Use other development modes based on your needs
+4.  **Review tasks**: Use , or other review modes to evaluate existing code
 
 ## Mode Collaboration Patterns
 
@@ -176,9 +163,9 @@ This is the primary workflow for new features:
     -   **Visionary** discusses architecture and technology stack options with the user based on requirements, securing user approval. It then provides the approved architecture and technology stack to the `Decomposer`.
     -   **Decomposer** takes the approved architecture and technology stack from Visionary and performs a detailed architectural decomposition.
     -   The decomposed architecture from `Decomposer` is then used by **Blueprinter** to create detailed component designs or by **Researcher** for further technology stack investigation if needed.
-2.  Design modes (e.g., Artisan, Pathfinder) create visual and interaction designs based on requirements and architecture.
+2.  Design modes (e.g., Artisan) create visual and interaction designs based on requirements and architecture.
 3.  **GitMaster** initializes the repository.
-4.  Implementation modes (e.g., FrontCrafter, BackendForge) build the features according to specifications and designs, running quality checks before completion.
+4.  Implementation modes (e.g., PythonMaster) build the features according to specifications and designs, running quality checks before completion.
 5.  Review modes evaluate the implementation at planned milestones.
 6.  **GitMaster** commits successfully reviewed and tested code at milestones.
 
@@ -222,37 +209,26 @@ Temperature influences the randomness and creativity of the model's responses. L
 **Temperature: 0.1**
 *   **Rationale:** Maximum precision and safety for critical operations.
 *   **Modes:**
-    *   `AuthGuardian`
     *   `DeploymentMaster`
     *   `DevSecOps`
     *   `GitMaster`
     *   `SecurityStrategist`
     *   `SecurityTester`
     *   `SelfReflection`
-    *   `SqlMaster`
-    *   `NoSqlSmith`
+    
     *   `CloudForge`
 
 **Temperature: 0.2**
 *   **Rationale:** High predictability for structured implementation, review, and detailed planning.
 *   **Modes:**
-    *   `AccessibilityGuardian`
-    *   `BackendForge`
-    *   `BackendInspector`
+    
     *   `Blueprinter`
-    *   `CodeReviewer`
     *   `DataArchitect`
     *   `Documentarian`
-    *   `FrontCrafter`
-    *   `FrontendInspector`
     *   `InfraPlanner`
     *   `Maestro`
-    *   `MobileDeveloper`
-    *   `NodeSmith`
     *   `PerformanceEngineer`
     *   `PlanReviewer`
-    *   `PythonMaster`
-    *   `ReactMaster`
     *   `TestCrafter`
     *   `ApiArchitect`
 
@@ -268,13 +244,13 @@ Temperature influences the randomness and creativity of the model's responses. L
 *   **Rationale:** Moderate creativity for exploring design options within constraints (UX, Design Systems).
 *   **Modes:**
     *   `DesignSystemForge`
-    *   `Pathfinder`
+
 
 **Temperature: 0.8**
 *   **Rationale:** Higher creativity for visual and motion design exploration.
 *   **Modes:**
     *   `Artisan`
-    *   `MotionDesigner`
+
 
 *Note: These are starting recommendations. Fine-tune based on observed performance.*
 

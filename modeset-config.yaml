@@ -233,6 +233,7 @@ special_mode_sets:
     - errormanager
     - gitmaster
     - jiramanager
+    - amplifybackendtester
   # Default mode set includes all modes except modebuilder and modesetbuilder
   all:
     - accessibilityguardian

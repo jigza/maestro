@@ -16,11 +16,7 @@
         "AI_RETRY_DELAY_MS": "1000"
       },
       "disabled": false,
-      "alwaysAllow": [
-        "read_file_content",
-        "explain_topic_with_docs",
-        "answer_query_websearch"
-      ],
+      "alwaysAllow": [],
       "timeout": 3600
     }
   }

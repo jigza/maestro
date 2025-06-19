@@ -86,6 +86,12 @@ function parseModeMd(content, filePath = 'unknown') {
   }
   const role = roleMatch[1].trim();
   
+  // Extract when to use section (optional)
+  // This regex captures content after "## When To Use" until the next "## Custom Instructions" heading or end of file.
+  const whenToUseMatch = content.match(/## When To Use\s+([\s\S]+?)(?=\n## Custom Instructions|$)/);
+  // whenToUse is optional, so no error if not found.
+  const whenToUse = whenToUseMatch ? whenToUseMatch[1].trim() : undefined; // Use undefined if not found
+
   // Extract custom instructions - capture everything after "## Custom Instructions" until the end of the file
   const instructionsMatch = content.match(/## Custom Instructions\s+([\s\S]+)$/);
   if (!instructionsMatch) {
@@ -97,6 +103,7 @@ function parseModeMd(content, filePath = 'unknown') {
     name,
     slug,
     role,
+    whenToUse,
     instructions
   };
 }
@@ -204,11 +211,14 @@ function updateModeInConfig(roomodesConfig, updatedMode) {
     ...roomodesConfig.customModes[modeIndex],
     name: updatedMode.name,
     roleDefinition: updatedMode.role,
+    whenToUse: updatedMode.whenToUse,
     customInstructions: updatedMode.instructions
   };
   
   return roomodesConfig;
 }
+
+// TODO: Add logic for locating and including the specific instructions within .roo/rules-{slug}/*.md files in the generated .roomodes configuration files. The current implementation might not locate those files, and only be including instructions from the main {name}-mode.md files.
 
 /**
  * Find the correct mode file path with proper capitalization
@@ -328,6 +338,9 @@ async function updateModeInModeSet(modeName, modeSetName) {
         if (originalMode.roleDefinition !== parsedMode.role) {
           console.log(`  - Role Definition: Changed (${originalMode.roleDefinition.length} chars -> ${parsedMode.role.length} chars)`);
         }
+        if (originalMode.whenToUse !== parsedMode.whenToUse) {
+          console.log(`  - When To Use: Changed (${originalMode.whenToUse.length} chars -> ${parsedMode.whenToUse.length} chars)`);
+        }
         if (originalMode.customInstructions !== parsedMode.instructions) {
           console.log(`  - Custom Instructions: Changed (${originalMode.customInstructions.length} chars -> ${parsedMode.instructions.length} chars)`);
         }
@@ -423,6 +436,7 @@ async function generateModesConfig() {
             slug: mode.slug,
             name: mode.name,
             roleDefinition: mode.role,
+            whenToUse: mode.whenToUse, // Add whenToUse property
             customInstructions: mode.instructions,
             groups: [
               "read",

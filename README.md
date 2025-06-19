@@ -19,6 +19,47 @@ The modes are organized into categories based on their primary function in the d
 
 ## Mode Structure
 
+The specialized Roo modes are defined using a structured approach that separates the main mode definition from its detailed operational instructions.
+
+### Main Mode Definition File
+
+Each mode is primarily defined in a markdown file located at `ModeName-mode.md`. This file contains:
+
+-   **`## Role Definition`**: A description of the mode's expertise and purpose.
+-   **`## When To Use`**: Guidance on when to select or delegate to this mode.
+-   **`## Custom Instructions`**: This section now primarily houses the `### CRITICAL RULES (MUST FOLLOW)` which are essential, high-level directives for the mode's operation.
+
+### Externalized Instructions
+
+Detailed operational instructions, including specific protocols and concluding summaries, are externalized into a dedicated directory for each mode: `.roo/rules-{slug}/` (where `{slug}` is the lowercase, hyphenated mode name). This directory contains:
+
+-   **`00N. Protocol Name.md`**: Separate markdown files for each numbered protocol (e.g., `001. Initialization Protocol.md`). These files contain the verbatim markdown content of the protocol, including its heading.
+-   **`999. ENDING.md`**: A markdown file containing the verbatim content of the mode's final summary paragraph (often starting with "YOU MUST REMEMBER that...").
+-   **`900. Learned Rules.md`**: This special file contains rules that are learned and added automatically by the `SelfReflection` mode after analyzing reflection logs from other modes. **This file should not be edited manually.** It allows modes to adapt and improve over time based on operational experience.
+
+The following diagram illustrates this structure:
+
+```mermaid
+graph TD
+    subgraph ModeDefinition ["ModeName-mode.md<br/><em>(in workspace root dir)</em>"]
+        direction LR
+        MD_Role["Role Definition"]
+        MD_WhenToUse["When To Use"]
+        MD_CustomInst["Custom Instructions"]
+        MD_CritRules["CRITICAL RULES (MUST FOLLOW)"]
+        MD_CustomInst --> MD_CritRules
+    end
+
+    subgraph ExternalRules ["External Rules<br/><em>(in .roo/rules-{slug}/)</em>"]
+        direction TB
+        ER_Protocols("001\. ProtocolX.md<br/>...<br/>00N\. ProtocolY.md")
+        ER_Learned("900\. Learned Rules.md<br/><em>(Managed by SelfReflection)</em>")
+        ER_Ending("999\. ENDING.md")
+    end
+
+    ModeDefinition -.-> ExternalRules
+```
+
 ### Coordination
 - **Maestro**: Central coordinator that delegates tasks to specialized modes and manages the workflow
 - **ModeBuilder**: Expert guide for creating and enhancing specialized modes with proper integration
@@ -196,21 +237,21 @@ This workflow focuses on quality and performance:
 
 ## Best Practices
 
-1. **Provide clear context**: When switching between modes, ensure context is preserved
-2. **Respect mode boundaries**: Allow each mode to focus on its area of expertise
-3. **Follow the workflow**: Complete each stage properly before moving to the next
-4. **Use appropriate modes**: Select the most specialized mode for each task
-5. **Document decisions**: Ensure design decisions and rationales are documented
-6. **Review transitions**: Verify handoffs between modes are complete and accurate.
-7. **Use `docs/` Directory**: All generated documentation, plans, and reports should be saved within the `docs/` directory structure.
-8. **Perform Quality Checks**: Implementation modes must run linters, formatters, build checks, and basic runtime checks before completing tasks. Inspector modes verify these checks.
-9. **Use Relative Paths**: Ensure all file operations within the workspace use relative paths (e.g., `docs/file.md`, `src/component.js`) to maintain portability. Absolute paths starting with `/` should generally be avoided for workspace files.
+1.  **Provide clear context**: When switching between modes, ensure context is preserved.
+2.  **Respect mode boundaries**: Allow each mode to focus on its area of expertise.
+3.  **Follow the workflow**: Complete each stage properly before moving to the next.
+4.  **Use appropriate modes**: Select the most specialized mode for each task.
+5.  **Document decisions**: Ensure design decisions and rationales are documented.
+6.  **Review transitions**: Verify handoffs between modes are complete and accurate.
+7.  **Use `docs/` Directory**: All generated documentation, plans, reports, and reflection logs should be saved within the `docs/` directory structure (e.g., `docs/project-management/`, `docs/reflections/`).
+8.  **Perform Quality Checks**: Implementation modes must run linters, formatters, build checks, and basic runtime checks before completing tasks. Inspector modes verify these checks.
+9.  **Use Relative Paths**: Ensure all file operations within the workspace use relative paths (e.g., `docs/file.md`, `src/component.js`) to maintain portability. Absolute paths starting with `/` should generally be avoided for workspace files.
 10. **Follow Command Rules**: Modes executing commands must use non-interactive flags and avoid long-running processes like dev servers.
 11. **Commit Milestones**: Ensure significant, reviewed milestones are committed to version control via GitMaster.
-12. **Log Reflections**: Modes should log significant issues or learnings to `docs/reflections/ModeName-reflection.md` for later analysis by SelfReflection mode.
+12. **Log Reflections**: Modes should log significant issues or learnings to `docs/reflections/ModeName-reflection.md` for later analysis by `SelfReflection` mode.
 13. **Respect Interaction Mode**: Modes must strictly adhere to the selected Interaction Mode (`YOLO` vs. `Follow`). Modes operating under `Follow` will ask clarifying questions; modes under `YOLO` will proceed autonomously. Modes will refuse contradictory instructions from Maestro regarding this behavior.
-
-14. **Configure Temperatures**: Consider adjusting the temperature setting for each mode based on its function (lower for precision, higher for creativity). See "Suggested Temperature Settings" below.
+14. **Understand Learned Rules**: Be aware that the `.roo/rules-{slug}/900. Learned Rules.md` file is automatically managed by `SelfReflection` and contributes to a mode's instructions. Avoid manual edits to this file.
+15. **Configure Temperatures**: Consider adjusting the temperature setting for each mode based on its function (lower for precision, higher for creativity). See "Suggested Temperature Settings" below.
 
 ## Suggested Temperature Settings
 
@@ -277,7 +318,7 @@ Temperature influences the randomness and creativity of the model's responses. L
 
 ## Mode Details
 
-Each mode has detailed instructions in its respective markdown file. Review these files to understand the specific capabilities, protocols, and responsibilities of each mode.
+Each mode's behavior is defined by its main definition file (`ModeName-mode.md`) and its associated external instruction files located in `.roo/rules-{slug}/`. Review these files to understand the specific capabilities, protocols, and responsibilities of each mode.
 
 ## Extending the System
 
@@ -287,18 +328,18 @@ Note: It is recommended to use a capable model like Claude 3.7 Sonnet when creat
 
 When creating new modes:
 
-1. Use ModeBuilder to guide the creation process
-2. Follow the established format and structure
-3. Define clear responsibilities and boundaries
-4. Specify collaboration protocols with existing modes
-5. Document the mode thoroughly
-6. Update this README to include the new mode
+1. Use ModeBuilder to guide the creation process.
+2. Follow the established format and structure for the main mode file and external rule files.
+3. Define clear responsibilities and boundaries.
+4. Specify collaboration protocols with existing modes.
+5. Document the mode thoroughly.
+6. Update this README to include the new mode in the appropriate category.
 
 For detailed guidance on using ModeBuilder, see `/docs/guides/using-mode-builder.md`.
 
 ## Implementation
 
-To implement these specialized modes, use the `generate-modes.js` script which will convert the markdown files into the appropriate `.roomodes` configuration format.
+To implement these specialized modes, use the `generate-modes.js` script located in the workspace root directory. This script will process the markdown mode definition files and their external rules to produce the appropriate `.roomodes` configuration format required by Roo Code.
 
 ### Automatic Generation
 

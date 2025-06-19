@@ -1,0 +1,42 @@
+{
+  "name": "maestro",
+  "version": "1.0.0",
+  "description": "Maestro project",
+  "scripts": {
+    "copy-maestro": "node scripts/copy_maestro.js --mode-set all",
+    "copy-maestro:aws": "node scripts/copy_maestro.js --mode-set aws",
+    "copy-maestro:core": "node scripts/copy_maestro.js --mode-set core",
+    "copy-maestro:frontend": "node scripts/copy_maestro.js --mode-set frontend",
+    "copy-maestro:backend": "node scripts/copy_maestro.js --mode-set backend",
+    "copy-maestro:data": "node scripts/copy_maestro.js --mode-set data",
+    "copy-maestro:design": "node scripts/copy_maestro.js --mode-set design",
+    "copy-maestro:security": "node scripts/copy_maestro.js --mode-set security",
+    "copy-maestro:planning": "node scripts/copy_maestro.js --mode-set planning",
+    "copy-maestro:testing": "node scripts/copy_maestro.js --mode-set testing",
+    "copy-maestro:artisan": "node scripts/copy_maestro.js --mode-set artisan",
+    "copy-maestro:researcher": "node scripts/copy_maestro.js --mode-set researcher",
+    "copy-maestro:reactmaster": "node scripts/copy_maestro.js --mode-set reactmaster",
+    "copy-maestro:pythonmaster": "node scripts/copy_maestro.js --mode-set pythonmaster",
+    "copy-maestro:dry-run": "node scripts/copy_maestro.js --dry-run",
+    "copy-maestro:playback": "node scripts/copy_maestro.js --playback",
+    "generate-mode-sets": "node scripts/generate-mode-sets.js",
+    "generate-mode-sets:list": "node scripts/generate-mode-sets.js --list-sets",
+    "generate-mode-sets:core": "node scripts/generate-mode-sets.js --mode-set core",
+    "generate-mode-sets:frontend": "node scripts/generate-mode-sets.js --mode-set frontend",
+    "generate-mode-sets:backend": "node scripts/generate-mode-sets.js --mode-set backend",
+    "generate-mode-sets:data": "node scripts/generate-mode-sets.js --mode-set data",
+    "generate-mode-sets:design": "node scripts/generate-mode-sets.js --mode-set design",
+    "generate-mode-sets:security": "node scripts/generate-mode-sets.js --mode-set security",
+    "generate-mode-sets:planning": "node scripts/generate-mode-sets.js --mode-set planning",
+    "generate-mode-sets:testing": "node scripts/generate-mode-sets.js --mode-set testing",
+    "generate-mode-sets:dry-run": "node scripts/generate-mode-sets.js --dry-run",
+    "update-mode": "node generate-modes.js --mode",
+    "update-mode:dry-run": "node generate-modes.js --mode --dry-run",
+    "doc:update": "pdoc generate-indexes -d ./docs && pdoc validate-links -d ./docs"
+  },
+  "license": "MIT",
+  "dependencies": {
+    "js-yaml": "^4.1.0",
+    "minimatch": "^5.1.6"
+  }
+}

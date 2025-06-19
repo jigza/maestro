@@ -14,13 +14,85 @@ The modes are organized into categories based on their primary function in the d
 
 ## Prerequisites
 
-- **Maestro Mode Repository:** The source code for these modes can be found at: [https://github.com/shariqriazz/maestro](https://github.com/shariqriazz/maestro)
-- **Vertex AI MCP Server:** Some modes, particularly `Researcher`, rely on capabilities provided by an external MCP server. The recommended server is: [https://github.com/shariqriazz/vertex-ai-mcp-server](https://github.com/shariqriazz/vertex-ai-mcp-server). Ensure this server is running and configured for full functionality.
+- **Maestro Mode Repository:** The source code for these modes can be found at: [https://github.com/jigza/maestro](https://github.com/jigza/maestro)
+- **Brave Search MCP Server:** Some modes, particularly `Researcher`, rely on capabilities provided by an external MCP server. The recommended server is: [https://github.com/modelcontextprotocol/servers/tree/main/src/brave-search](https://github.com/modelcontextprotocol/servers/tree/main/src/brave-search). Ensure this server is running and configured for full functionality. This should be done using Docker.
 
 ## Mode Structure
 
+The specialized Roo modes are defined using a structured approach that separates the main mode definition from its detailed operational instructions.
+
+### Main Mode Definition File
+
+Each mode is primarily defined in a markdown file located at `ModeName-mode.md`. This file contains:
+
+-   **`## Role Definition`**: A description of the mode's expertise and purpose.
+-   **`## When To Use`**: Guidance on when to select or delegate to this mode.
+-   **`## Custom Instructions`**: This section now primarily houses the `### CRITICAL RULES (MUST FOLLOW)` which are essential, high-level directives for the mode's operation.
+
+### Externalized Instructions
+
+Detailed operational instructions, including specific protocols and concluding summaries, are externalized into a dedicated directory for each mode: `.roo/rules-{slug}/` (where `{slug}` is the lowercase, hyphenated mode name). This directory contains:
+
+-   **`00N. Protocol Name.md`**: Separate markdown files for each numbered protocol (e.g., `001. Initialization Protocol.md`). These files contain the verbatim markdown content of the protocol, including its heading.
+-   **`999. ENDING.md`**: A markdown file containing the verbatim content of the mode's final summary paragraph (often starting with "YOU MUST REMEMBER that...").
+-   **`900. Learned Rules.md`**: This special file contains rules that are learned and added automatically by the `SelfReflection` mode after analyzing reflection logs from other modes. **This file should not be edited manually.** It allows modes to adapt and improve over time based on operational experience.
+
+The following diagram illustrates this structure:
+
+```mermaid
+graph TD
+    subgraph ModeDefinition ["ModeName-mode.md<br/><em>(in workspace root dir)</em>"]
+        direction LR
+        MD_Role["Role Definition"]
+        MD_WhenToUse["When To Use"]
+        MD_CustomInst["Custom Instructions"]
+        MD_CritRules["CRITICAL RULES (MUST FOLLOW)"]
+        MD_CustomInst --> MD_CritRules
+    end
+
+    subgraph ExternalRules ["External Rules<br/><em>(in .roo/rules-{slug}/)</em>"]
+        direction TB
+        ER_Protocols("001\. ProtocolX.md<br/>...<br/>00N\. ProtocolY.md")
+        ER_Learned("900\. Learned Rules.md<br/><em>(Managed by SelfReflection)</em>")
+        ER_Ending("999\. ENDING.md")
+    end
+
+    ModeDefinition -.-> ExternalRules
+```
+
 ### Coordination
 - **Maestro**: Central coordinator that delegates tasks to specialized modes and manages the workflow
+- **ModeBuilder**: Expert guide for creating and enhancing specialized modes with proper integration
+
+## Mode Sets
+
+The Maestro system can operate with different configurations of modes, called "mode sets". These allow you to load only the modes relevant to your specific project or domain:
+
+### Available Mode Sets
+
+- **all**: Complete set with all available modes
+- **core**: Essential modes for basic orchestration (Maestro, Researcher, ErrorManager, ModeSetBuilder)
+- **frontend**: Frontend development modes (FrontCrafter, ReactMaster, Artisan, etc.)
+- **backend**: Backend development modes (BackendForge, NodeSmith, ApiArchitect, etc.)
+- **data**: Database and data management modes (DataArchitect, SqlMaster, NoSqlSmith)
+- **devops**: DevOps and deployment modes (CloudForge, DeploymentMaster, GitMaster, etc.)
+- **design**: Design and UX modes (Artisan, Pathfinder, MotionDesigner, etc.)
+- **security**: Security-focused modes (SecurityStrategist, SecurityTester, AuthGuardian, etc.)
+- **planning**: Planning and architecture modes (Visionary, Strategist, Blueprinter, etc.)
+- **testing**: Testing and quality assurance modes (TestCrafter, SecurityTester, PerformanceEngineer)
+- **aws**: AWS development modes (AWSArchitect, BedrockForge, DynamoDBExpert, AmplifyForge, etc.)
+
+### AWS Mode Set
+
+The AWS mode set is specifically designed for AWS cloud development and includes:
+
+- All specialized AWS service modes
+- Supporting data, API, and security modes
+- Integration with Amplify Gen 2
+- Serverless architecture expertise
+- Infrastructure as code support
+
+For detailed AWS workflows, see [aws-modeset-workflows.md](aws-modeset-workflows.md).
 
 ### Research
 - **Researcher**: Up-to-date information gatherer using web search and research capabilities
@@ -57,8 +129,20 @@ The modes are organized into categories based on their primary function in the d
 - **SqlMaster**: SQL database specialist implementing relational database solutions
 - **NoSqlSmith**: NoSQL database specialist implementing NoSQL database solutions
 
+### AWS Development
+- **AWSArchitect**: AWS architecture and service selection expert focusing on Well-Architected Framework
+- **BedrockForge**: Amazon Bedrock and GenAI specialist for RAG and AI/ML implementations
+- **AWSSecurityGuard**: AWS security, IAM, and compliance specialist
+- **DynamoDBExpert**: DynamoDB design and optimization specialist with single-table design expertise
+- **AppSyncSpecialist**: GraphQL and AWS AppSync developer for real-time APIs
+- **CognitoExpert**: AWS Cognito authentication and user management specialist
+- **LambdaOptimizer**: Lambda function optimization and serverless compute expert
+- **AmplifyForge**: AWS Amplify Gen 2 specialist for full-stack serverless applications
+- **CloudFormationExpert**: Infrastructure as code specialist using CloudFormation and CDK
+
 ### DevOps
 - **GitMaster**: Version control and Git workflow expert
+- **JiraManager**: Issue tracking and project management workflow specialist
 - **DeploymentMaster**: Deployment automation specialist
 - **CloudForge**: Cloud infrastructure implementation specialist
 - **DevSecOps**: Security integration in development and operations specialist
@@ -153,21 +237,21 @@ This workflow focuses on quality and performance:
 
 ## Best Practices
 
-1. **Provide clear context**: When switching between modes, ensure context is preserved
-2. **Respect mode boundaries**: Allow each mode to focus on its area of expertise
-3. **Follow the workflow**: Complete each stage properly before moving to the next
-4. **Use appropriate modes**: Select the most specialized mode for each task
-5. **Document decisions**: Ensure design decisions and rationales are documented
-6. **Review transitions**: Verify handoffs between modes are complete and accurate.
-7. **Use `docs/` Directory**: All generated documentation, plans, and reports should be saved within the `docs/` directory structure.
-8. **Perform Quality Checks**: Implementation modes must run linters, formatters, build checks, and basic runtime checks before completing tasks. Inspector modes verify these checks.
-9. **Use Relative Paths**: Ensure all file operations within the workspace use relative paths (e.g., `docs/file.md`, `src/component.js`) to maintain portability. Absolute paths starting with `/` should generally be avoided for workspace files.
+1.  **Provide clear context**: When switching between modes, ensure context is preserved.
+2.  **Respect mode boundaries**: Allow each mode to focus on its area of expertise.
+3.  **Follow the workflow**: Complete each stage properly before moving to the next.
+4.  **Use appropriate modes**: Select the most specialized mode for each task.
+5.  **Document decisions**: Ensure design decisions and rationales are documented.
+6.  **Review transitions**: Verify handoffs between modes are complete and accurate.
+7.  **Use `docs/` Directory**: All generated documentation, plans, reports, and reflection logs should be saved within the `docs/` directory structure (e.g., `docs/project-management/`, `docs/reflections/`).
+8.  **Perform Quality Checks**: Implementation modes must run linters, formatters, build checks, and basic runtime checks before completing tasks. Inspector modes verify these checks.
+9.  **Use Relative Paths**: Ensure all file operations within the workspace use relative paths (e.g., `docs/file.md`, `src/component.js`) to maintain portability. Absolute paths starting with `/` should generally be avoided for workspace files.
 10. **Follow Command Rules**: Modes executing commands must use non-interactive flags and avoid long-running processes like dev servers.
 11. **Commit Milestones**: Ensure significant, reviewed milestones are committed to version control via GitMaster.
-12. **Log Reflections**: Modes should log significant issues or learnings to `docs/reflections/ModeName-reflection.md` for later analysis by SelfReflection mode.
+12. **Log Reflections**: Modes should log significant issues or learnings to `docs/reflections/ModeName-reflection.md` for later analysis by `SelfReflection` mode.
 13. **Respect Interaction Mode**: Modes must strictly adhere to the selected Interaction Mode (`YOLO` vs. `Follow`). Modes operating under `Follow` will ask clarifying questions; modes under `YOLO` will proceed autonomously. Modes will refuse contradictory instructions from Maestro regarding this behavior.
-
-14. **Configure Temperatures**: Consider adjusting the temperature setting for each mode based on its function (lower for precision, higher for creativity). See "Suggested Temperature Settings" below.
+14. **Understand Learned Rules**: Be aware that the `.roo/rules-{slug}/900. Learned Rules.md` file is automatically managed by `SelfReflection` and contributes to a mode's instructions. Avoid manual edits to this file.
+15. **Configure Temperatures**: Consider adjusting the temperature setting for each mode based on its function (lower for precision, higher for creativity). See "Suggested Temperature Settings" below.
 
 ## Suggested Temperature Settings
 
@@ -234,25 +318,166 @@ Temperature influences the randomness and creativity of the model's responses. L
 
 ## Mode Details
 
-Each mode has detailed instructions in its respective markdown file. Review these files to understand the specific capabilities, protocols, and responsibilities of each mode.
+Each mode's behavior is defined by its main definition file (`ModeName-mode.md`) and its associated external instruction files located in `.roo/rules-{slug}/`. Review these files to understand the specific capabilities, protocols, and responsibilities of each mode.
 
 ## Extending the System
 
-The specialized mode system is designed to be extensible. New modes can be added to address specific domains or technologies as needed. When creating new modes:
+The specialized mode system is designed to be extensible. New modes can be added to address specific domains or technologies as needed. The recommended way to create new modes is to use the **ModeBuilder** mode, which guides you through the entire process.
 
 Note: It is recommended to use a capable model like Claude 3.7 Sonnet when creating or editing modes to ensure high-quality instructions and adherence to the system's design principles.
-1. Follow the established format and structure
-2. Define clear responsibilities and boundaries
-3. Specify collaboration protocols with existing modes
-4. Document the mode thoroughly
-5. Update this README to include the new mode
+
+When creating new modes:
+
+1. Use ModeBuilder to guide the creation process.
+2. Follow the established format and structure for the main mode file and external rule files.
+3. Define clear responsibilities and boundaries.
+4. Specify collaboration protocols with existing modes.
+5. Document the mode thoroughly.
+6. Update this README to include the new mode in the appropriate category.
+
+For detailed guidance on using ModeBuilder, see `/docs/guides/using-mode-builder.md`.
 
 ## Implementation
 
-To implement these specialized modes, use the `generate-modes.js` script which will convert the markdown files into the appropriate `.roomodes` configuration format.
+To implement these specialized modes, use the `generate-modes.js` script located in the workspace root directory. This script will process the markdown mode definition files and their external rules to produce the appropriate `.roomodes` configuration format required by Roo Code.
 
 ### Automatic Generation
 
 A GitHub Action is configured to automatically run the `generate-modes.js` script whenever changes are pushed to the `master` or `main` branch. This ensures that the `.roomodes` configuration file is always up-to-date with the latest mode definitions.
 
 For more details about the GitHub Actions workflow, see the [GitHub Actions documentation](docs/devops/github-actions.md).
+
+### Single Mode Updates
+
+You can update a specific mode without regenerating the entire mode set using the enhanced `generate-modes.js` script:
+
+```bash
+# Update a specific mode in all relevant mode sets
+node generate-modes.js --mode backendforge
+
+# Update a specific mode in a specific mode set
+node generate-modes.js --mode backendforge --mode-set backend
+
+# Preview updates without making changes
+node generate-modes.js --mode backendforge --dry-run
+```
+
+For convenience, npm scripts are also available:
+
+```bash
+# Update a specific mode in all relevant mode sets
+npm run update-mode backendforge
+
+# Preview updates without making changes
+npm run update-mode:dry-run backendforge
+```
+
+For detailed instructions on updating single modes, see [Updating a Single Mode](docs/guides/updating-single-mode.md).
+
+## Copy Maestro Mechanism
+
+The copy-maestro mechanism allows you to copy Maestro project files to a target directory. This is useful for setting up new projects with the Maestro mode system.
+
+### Using .copyignore
+
+The `.copyignore` file allows you to exclude specific files and directories from being copied to the target directory, similar to how `.gitignore` works:
+
+1. **Create a .copyignore file**: Add patterns of files or directories you want to exclude
+2. **Pattern format**: Each line in the file represents a pattern to ignore
+3. **Comments**: Lines starting with `#` are treated as comments
+
+Example `.copyignore` file:
+```
+# Exclude project management files
+docs/project-management
+
+# Exclude other directories if needed
+# some/other/directory
+```
+
+### Running Copy Maestro
+
+Use the following commands to copy Maestro files to a target directory:
+
+```bash
+# Copy all modes
+npm run copy-maestro ../target-project
+
+# Copy specific mode sets
+npm run copy-maestro:frontend ../target-project
+npm run copy-maestro:backend ../target-project
+npm run copy-maestro:planning ../target-project
+npm run copy-maestro:aws ../target-project
+
+# Dry run (show what would be copied without making changes)
+npm run copy-maestro:dry-run ../target-project
+```
+
+The copy operation will respect the patterns in your `.copyignore` file and exclude those paths from being copied to the target directory.
+## Available Documentation
+
+- [AccessibilityGuardian Mode](./AccessibilityGuardian-mode.md)
+- [AmplifyForge Mode](./AmplifyForge-mode.md)
+- [ApiArchitect Mode](./ApiArchitect-mode.md)
+- [AppSyncSpecialist Mode](./AppSyncSpecialist-mode.md)
+- [Artisan Mode](./Artisan-mode.md)
+- [AuthGuardian Mode](./AuthGuardian-mode.md)
+- [AWS/Amplify Gen 2 Agent Implementation Plan](./aws-agent-plan.md)
+- [AWS Mode Set Workflows](./aws-modeset-workflows.md)
+- [AWSArchitect Mode](./AWSArchitect-mode.md)
+- [AWSSecurityGuard Mode](./AWSSecurityGuard-mode.md)
+- [BackendForge Mode](./BackendForge-mode.md)
+- [BackendInspector Mode](./BackendInspector-mode.md)
+- [BedrockForge Mode](./BedrockForge-mode.md)
+- [Blueprinter Mode](./Blueprinter-mode.md)
+- [Claude Assistant Mode Tuning Instructions](./claude-maestro-tuning-instructions.md)
+- [Claude Assistant Mode General Tuning Instructions](./claude-mode-tuning-instructions.md)
+- [CloudForge Mode](./CloudForge-mode.md)
+- [CloudFormationExpert Mode](./CloudFormationExpert-mode.md)
+- [CodeReviewer Mode](./CodeReviewer-mode.md)
+- [CognitoExpert Mode](./CognitoExpert-mode.md)
+- [ContentWriter Mode](./ContentWriter-mode.md)
+- [Contributing to Specialized Roo Modes](./CONTRIBUTING.md)
+- [DataArchitect Mode](./DataArchitect-mode.md)
+- [DeploymentMaster Mode](./DeploymentMaster-mode.md)
+- [DesignSystemForge Mode](./DesignSystemForge-mode.md)
+- [DevSecOps Mode](./DevSecOps-mode.md)
+- [Documentarian Mode](./Documentarian-mode.md)
+- [DynamoDBExpert Mode](./DynamoDBExpert-mode.md)
+- [ErrorManager Mode](./ErrorManager-mode.md)
+- [FrontCrafter Mode](./FrontCrafter-mode.md)
+- [FrontendInspector Mode](./FrontendInspector-mode.md)
+- [GitMaster Mode](./GitMaster-mode.md)
+- [InfraPlanner Mode](./InfraPlanner-mode.md)
+- [JiraManager Mode](./JiraManager-mode.md)
+- [LambdaOptimizer Mode](./LambdaOptimizer-mode.md)
+- [Maestro Mode](./Maestro-mode.md)
+- [MobileDeveloper Mode](./MobileDeveloper-mode.md)
+- [ModeBuilder Mode](./ModeBuilder-mode.md)
+- [ModeSetBuilder Mode](./ModeSetBuilder-mode.md)
+- [MotionDesigner Mode](./MotionDesigner-mode.md)
+- [NodeSmith Mode](./NodeSmith-mode.md)
+- [NoSqlSmith Mode](./NoSqlSmith-mode.md)
+- [Pathfinder Mode](./Pathfinder-mode.md)
+- [PerformanceEngineer Mode](./PerformanceEngineer-mode.md)
+- [PlanReviewer Mode](./PlanReviewer-mode.md)
+- [PythonMaster Mode](./PythonMaster-mode.md)
+- [ReactMaster Mode](./ReactMaster-mode.md)
+- [Researcher Mode](./Researcher-mode.md)
+- [SecurityStrategist Mode](./SecurityStrategist-mode.md)
+- [SecurityTester Mode](./SecurityTester-mode.md)
+- [SqlMaster Mode](./SqlMaster-mode.md)
+- [Strategist Mode](./Strategist-mode.md)
+- [TestCrafter Mode](./TestCrafter-mode.md)
+- [Visionary Mode](./Visionary-mode.md)
+
+## Subdirectories
+
+- [.git](./.git/)
+- [.github](./.github/)
+- [.practices](./.practices/)
+- [.roo](./.roo/)
+- [Custom Sets](./custom-sets/)
+- [Docs](./docs/)
+- [Scripts](./scripts/)
+

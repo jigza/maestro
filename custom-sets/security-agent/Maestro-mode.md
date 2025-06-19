@@ -1,14 +1,14 @@
 
 <!--
 INSTRUCTIONS FOR LLM:
-This is a modified version of the Maestro-mode.md file for the "frontend" mode set.
-The following modes are included in this set: Frontcrafter, Reactmaster, Frontendinspector, Artisan, Pathfinder, Accessibilityguardian, Maestro, Jiramanager.
+This is a modified version of the Maestro-mode.md file for the "security" mode set.
+The following modes are included in this set: Securitystrategist, Securitytester, Authguardian, Devsecops, Maestro, Jiramanager.
 
 You MUST modify the Mode Selection Criteria table to only include task types relevant to these modes.
 For each task type, ensure that both Primary Modes and Secondary Modes only reference modes that are in this set.
 If a task type's primary or secondary modes are not in this set, remove that entire row from the table.
 
-For this frontend-specific mode set, only include UI/UX design, frontend development, CSS/styling, accessibility, and frontend code review tasks.
+For this specialized mode set, include only the tasks relevant to the modes listed above.
 
 Maintain all other Maestro functionality and instructions.
 -->

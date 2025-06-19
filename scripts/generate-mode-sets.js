@@ -22,6 +22,8 @@ const writeFile = util.promisify(fs.writeFile);
 const copyFile = util.promisify(fs.copyFile);
 const mkdir = util.promisify(fs.mkdir);
 const unlink = util.promisify(fs.unlink);
+const readdir = util.promisify(fs.readdir);
+const exists = util.promisify(fs.exists);
 
 // Path to the mode set configuration file
 const modeSetConfigPath = path.join(process.cwd(), 'modeset-config.yaml');
@@ -297,22 +299,52 @@ async function generateModeSet(setName, modes) {
       
       // Generate .roomodes file using the temporary directory
       console.log(`Generating .roomodes file for mode set: ${setName}`);
-      
-      // Run generate-modes.js in the temporary directory
+      // Use the original generate-modes.js but set the working directory to the temp directory
       const generateModesPath = path.join(process.cwd(), 'generate-modes.js');
       
-      // Copy generate-modes.js to temp directory
-      const tempGenerateModesPath = path.join(tempDir, 'generate-modes.js');
-      await copyFile(generateModesPath, tempGenerateModesPath);
+      // Execute generate-modes.js with the temp directory as the working directory
+      // Use absolute paths to avoid module resolution issues
+      execSync(`node "${generateModesPath}"`, {
+        cwd: tempDir,
+        env: {
+          ...process.env,
+          NODE_PATH: process.cwd() // Set NODE_PATH to include the original directory
+        }
+      });
       
-      // Execute generate-modes.js in the temp directory
-      execSync(`node ${tempGenerateModesPath}`, { cwd: tempDir });
       
-      // Copy the generated .roomodes file to the output path in the mode set directory
+      // Check if the .roomodes file was created in the temp directory
       const tempRoomodesPath = path.join(tempDir, '.roomodes');
-      await copyFile(tempRoomodesPath, outputRoomodesPath);
+      if (await exists(tempRoomodesPath)) {
+        console.log(`Found .roomodes file in temp directory: ${tempRoomodesPath}`);
+        
+        // Copy the generated .roomodes file to the output path in the mode set directory
+        try {
+          await copyFile(tempRoomodesPath, outputRoomodesPath);
+          console.log(`✓ Generated .roomodes file for mode set ${setName} at: ${outputRoomodesPath}`);
+        } catch (error) {
+          console.error(`Error copying .roomodes file: ${error.message}`);
+          
+          // Try to list files in the temp directory
+          try {
+            const tempFiles = await readdir(tempDir);
+            console.log(`Files in temp directory: ${tempFiles.join(', ')}`);
+          } catch (e) {
+            console.error(`Error listing temp directory: ${e.message}`);
+          }
+        }
+      } else {
+        console.error(`Error: .roomodes file not found in temp directory: ${tempRoomodesPath}`);
+        
+        // Try to list files in the temp directory
+        try {
+          const tempFiles = await readdir(tempDir);
+          console.log(`Files in temp directory: ${tempFiles.join(', ')}`);
+        } catch (e) {
+          console.error(`Error listing temp directory: ${e.message}`);
+        }
+      }
       
-      console.log(`✓ Generated .roomodes file for mode set ${setName} at: ${outputRoomodesPath}`);
       console.log(`✓ Saved Maestro mode file for mode set ${setName} at: ${customMaestroPath}`);
       
       // For backward compatibility during transition, also copy to legacy paths

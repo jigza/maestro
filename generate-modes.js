@@ -68,11 +68,11 @@ Examples:
  * @param {string} content - The content of the markdown file
  * @returns {Object} An object containing the mode name, slug, role, and instructions
  */
-function parseModeMd(content) {
+function parseModeMd(content, filePath = 'unknown') {
   // Extract mode name from the first heading
   const nameMatch = content.match(/^# ([^\n]+) Mode/m);
   if (!nameMatch) {
-    throw new Error('Could not find mode name in markdown file');
+    throw new Error(`Could not find mode name in markdown file: ${filePath}\nExpected format: "# ModeName Mode"`);
   }
   const name = nameMatch[1];
   
@@ -82,14 +82,14 @@ function parseModeMd(content) {
   // Extract role definition
   const roleMatch = content.match(/## Role Definition\s+([^\n]+(?:\n(?!##)[^\n]+)*)/);
   if (!roleMatch) {
-    throw new Error('Could not find role definition in markdown file');
+    throw new Error(`Could not find role definition in markdown file: ${filePath}\nExpected section: "## Role Definition"`);
   }
   const role = roleMatch[1].trim();
   
   // Extract custom instructions - capture everything after "## Custom Instructions" until the end of the file
   const instructionsMatch = content.match(/## Custom Instructions\s+([\s\S]+)$/);
   if (!instructionsMatch) {
-    throw new Error('Could not find custom instructions in markdown file');
+    throw new Error(`Could not find custom instructions in markdown file: ${filePath}\nExpected section: "## Custom Instructions"`);
   }
   const instructions = instructionsMatch[1].trim();
   
@@ -226,8 +226,6 @@ async function findModeFilePath(modeName) {
     `${modeName.toLowerCase()}-mode.md`,
     // All uppercase first letter of each word
     `${modeName.split(/[-_\s]+/).map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase()).join('')}-mode.md`,
-    // CamelCase with uppercase first letter of each word
-    `${modeName.split(/[-_\s]+/).map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase()).join('')}-mode.md`,
     // Try with "Mode" capitalized
     `${modeName.charAt(0).toUpperCase() + modeName.slice(1)}Mode-mode.md`,
     // Try with both first letters capitalized
@@ -284,6 +282,14 @@ async function updateModeInModeSet(modeName, modeSetName) {
     // Check if the directory exists
     if (!await exists(modeSetDir)) {
       console.log(`Skipping mode set '${modeSetName}': directory not found at ${modeSetDir}`);
+      
+      // If this is an individual mode set, offer to create it
+      const modeSets = await loadModeSets();
+      if (modeSets[modeSetName] && modeSets[modeSetName].length <= 2) {
+        console.log(`Note: '${modeSetName}' appears to be an individual mode set.`);
+        console.log(`To create this mode set directory, run: mkdir -p custom-sets/${modeSetName}-agent`);
+      }
+      
       return false;
     }
     
@@ -296,7 +302,7 @@ async function updateModeInModeSet(modeName, modeSetName) {
     // Read and parse the mode file
     console.log(`Reading mode file: ${modeFilePath}`);
     const modeContent = await readFile(modeFilePath, 'utf-8');
-    const parsedMode = parseModeMd(modeContent);
+    const parsedMode = parseModeMd(modeContent, modeFilePath);
     
     // Read and parse the .roomodes file
     console.log(`Reading .roomodes file: ${roomodesPath}`);
@@ -306,13 +312,31 @@ async function updateModeInModeSet(modeName, modeSetName) {
     console.log(`Updating mode '${modeName}' in mode set '${modeSetName}'...`);
     const updatedConfig = updateModeInConfig(roomodesConfig, parsedMode);
     
+    // Generate the updated configuration JSON
+    const configJson = JSON.stringify(updatedConfig, null, 2);
+    
     if (dryRun) {
       console.log(`[DRY RUN] Would update mode '${modeName}' in mode set '${modeSetName}'`);
+      
+      // Show a preview of the changes
+      const originalMode = roomodesConfig.customModes.find(m => m.slug === parsedMode.slug);
+      if (originalMode) {
+        console.log(`  Changes to mode '${modeName}':`);
+        if (originalMode.name !== parsedMode.name) {
+          console.log(`  - Name: "${originalMode.name}" -> "${parsedMode.name}"`);
+        }
+        if (originalMode.roleDefinition !== parsedMode.role) {
+          console.log(`  - Role Definition: Changed (${originalMode.roleDefinition.length} chars -> ${parsedMode.role.length} chars)`);
+        }
+        if (originalMode.customInstructions !== parsedMode.instructions) {
+          console.log(`  - Custom Instructions: Changed (${originalMode.customInstructions.length} chars -> ${parsedMode.instructions.length} chars)`);
+        }
+      }
+      
       return true;
     }
     
     // Write the updated configuration back to the file
-    const configJson = JSON.stringify(updatedConfig, null, 2);
     await writeFile(roomodesPath, configJson);
     
     console.log(`✓ Successfully updated mode '${modeName}' in mode set '${modeSetName}'`);
@@ -346,10 +370,28 @@ async function generateModesConfig() {
         
         if (relevantModeSets.length === 0) {
           console.error(`Error: Mode '${mode}' not found in any mode set.`);
+          console.error(`Available modes in config: ${Object.values(modeSets).flat().filter((v, i, a) => a.indexOf(v) === i).sort().join(', ')}`);
           process.exit(1);
         }
         
         console.log(`Found mode '${mode}' in ${relevantModeSets.length} mode sets: ${relevantModeSets.join(', ')}`);
+        
+        // Check which mode set directories actually exist
+        const existingModeSets = [];
+        const missingModeSets = [];
+        
+        for (const setName of relevantModeSets) {
+          const modeSetDir = path.join(process.cwd(), 'custom-sets', `${setName}-agent`);
+          if (await exists(modeSetDir)) {
+            existingModeSets.push(setName);
+          } else {
+            missingModeSets.push(setName);
+          }
+        }
+        
+        if (missingModeSets.length > 0) {
+          console.log(`Note: The following mode sets don't have directories: ${missingModeSets.join(', ')}`);
+        }
         
         // Update the mode in all relevant mode sets
         let successCount = 0;
@@ -374,7 +416,7 @@ async function generateModesConfig() {
         console.log(`Processing ${file}...`);
         const content = await readFile(file, 'utf-8');
         try {
-          const mode = parseModeMd(content);
+          const mode = parseModeMd(content, file);
           
           // Add mode to the array
           modes.push({
@@ -404,11 +446,14 @@ async function generateModesConfig() {
         customModes: modes
       };
       
+      // Generate the configuration JSON
+      const configJson = JSON.stringify(roomodesConfig, null, 2);
+      
       if (dryRun) {
         console.log(`[DRY RUN] Would generate .roomodes configuration with ${modes.length} modes`);
+        console.log(`Mode slugs: ${modes.map(m => m.slug).join(', ')}`);
       } else {
         // Write the configuration to .roomodes file
-        const configJson = JSON.stringify(roomodesConfig, null, 2);
         await writeFile('.roomodes', configJson);
         
         console.log(`Successfully generated .roomodes configuration with ${modes.length} modes`);
